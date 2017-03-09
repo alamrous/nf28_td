@@ -13,8 +13,8 @@ class RootViewElement extends GridPane {
 
     private ApplicationController controller;
 
-    private TextField TextField;
-    private Slider Slider;
+    private TextField textField;
+    private Slider slider;
 
     RootViewElement() {
         BorderPane mainBorderPane = new BorderPane();
@@ -41,37 +41,43 @@ class RootViewElement extends GridPane {
 
         //Ajout textField + Label
         javafx.scene.control.Label label = new Label("Intervalle(millis): ");
-        this.TextField = new TextField();
+        this.textField = new TextField();
         HBox TextContainer = new HBox();
-        TextContainer.getChildren().addAll(label, this.TextField);
+        TextContainer.getChildren().addAll(label, this.textField);
         mainBorderPane.setTop(TextContainer);
 
-        this.Slider = new Slider(0, 10, 0);
-        this.Slider.setShowTickLabels(true);
-        this.Slider.setShowTickMarks(true);
-        this.Slider.setMajorTickUnit(1);
-        this.Slider.setMinorTickCount(5);
-        this.Slider.setBlockIncrement(1);
+        slider = new Slider(0, 10, 0);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.setMajorTickUnit(1);
+        slider.setMinorTickCount(5);
+        slider.setBlockIncrement(1);
 
-        //Binding
-        this.Slider.valueChangingProperty().addListener((obs, wasChanging, isnowChanging) -> controller.sliderValueHasChanged(isnowChanging, this.Slider.getValue()));
-        this.Slider.valueProperty().addListener((obs, oldValue, newValue) -> controller.sliderValueHasChanged(this.Slider.isValueChanging(), newValue.doubleValue()));
+        //Bindings
+        slider.valueChangingProperty().addListener((obs, wasChanging, isnowChanging) -> controller.sliderValueHasChanged(isnowChanging, slider.getValue()));
+        slider.valueProperty().addListener((obs, oldValue, newValue) -> controller.sliderValueHasChanged(slider.isValueChanging(), newValue.doubleValue()));
+
+        textField.setOnAction(evt -> controller.textFieldValueHasChanged(textField.getText()));
 
 
-        mainBorderPane.setBottom(this.Slider);
+
+        mainBorderPane.setBottom(slider);
 
         this.add(mainBorderPane, 0, 0);
         this.add(imageView, 1, 0);
 
     }
 
-    void updateTextField(Number value) {
-        int val = (int) (value.doubleValue() * 1000);
-        this.TextField.setText(Integer.toString(val));
+    void updateIntervalle(Number value) {
+//        System.out.println("1 " + value.doubleValue());
+        Double val = (value.doubleValue() * 1000.0);
+//        System.out.println("2 " + Math.round(val));
+        textField.setText(Long.toString(Math.round(val)));
+        slider.setValue(value.doubleValue());
     }
 
     void setController(ApplicationController Controller) {
-        this.controller = Controller;
+        controller = Controller;
     }
 
 }
