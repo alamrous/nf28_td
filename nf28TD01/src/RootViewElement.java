@@ -1,3 +1,6 @@
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -15,10 +18,15 @@ class RootViewElement extends GridPane {
 
     private TextField textField;
     private Slider slider;
+    private Button startButton;
+    private Button stopButton;
 
     RootViewElement() {
+
+        setGridLinesVisible(true);
+
         BorderPane mainBorderPane = new BorderPane();
-        this.setGridLinesVisible(true);
+        mainBorderPane.setPadding(new Insets(10));
 
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
@@ -32,10 +40,21 @@ class RootViewElement extends GridPane {
         ImageView imageView = new ImageView("file:image/image0.jpg");
         imageView.setFitHeight(200);
         imageView.setFitWidth(200);
+
         //Ajout boutons
         HBox ButtonContainer = new HBox();
-        Button startButton = new Button("Start");
-        Button stopButton = new Button("Stop");
+        ButtonContainer.setSpacing(16);
+
+        startButton = new Button("Start");
+        startButton.setPadding(new Insets(6));
+        startButton.setMinWidth(72);
+        startButton.setDisable(true);
+
+        stopButton = new Button("Stop");
+        stopButton.setPadding(new Insets(6));
+        stopButton.setMinWidth(72);
+        stopButton.setDisable(true);
+
         ButtonContainer.getChildren().addAll(startButton, stopButton);
         mainBorderPane.setCenter(ButtonContainer);
 
@@ -60,7 +79,6 @@ class RootViewElement extends GridPane {
         textField.setOnAction(evt -> controller.textFieldValueHasChanged(textField.getText()));
 
 
-
         mainBorderPane.setBottom(slider);
 
         this.add(mainBorderPane, 0, 0);
@@ -74,6 +92,7 @@ class RootViewElement extends GridPane {
 //        System.out.println("2 " + Math.round(val));
         textField.setText(Long.toString(Math.round(val)));
         slider.setValue(value.doubleValue());
+        startButton.setDisable(value.doubleValue() == 0.0);
     }
 
     void setController(ApplicationController Controller) {

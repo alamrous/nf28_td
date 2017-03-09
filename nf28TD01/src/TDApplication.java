@@ -20,6 +20,7 @@ public class TDApplication extends Application {
         controller.initialize();
         Scene scene = new Scene(root, 800, 300);
         stage.setScene(scene);
+        stage.setTitle("Affichage d'images");
         stage.show();
     }
 
