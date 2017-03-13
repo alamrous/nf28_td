@@ -1,4 +1,12 @@
+import java.util.ArrayList;
 import java.util.Objects;
+
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.util.Duration;
 
 class ApplicationController {
 
@@ -33,5 +41,32 @@ class ApplicationController {
             modele.intervalleProperty().setValue(((double)newVal)/1000.0);
         }
     }
+    void beginTimer(){
+    	view.getStopButton().setDisable(false);
+    	ArrayList<String> imageList = modele.getImageNames();
+    	Timeline timer = new Timeline(new KeyFrame(
+    	        Duration.millis(modele.intervalleProperty().getValue() * 1000),
+    	        ae -> switchPicture(imageList,modele.getCurrentImageViewIndex(),imageList.size())));
+    	timer.setCycleCount(imageList.size());
+    	timer.setOnFinished(e -> view.switchStopButton(true));
+    	modele.setTimer(timer);
+    	timer.play();
+
+    	//timer.stop();
+    }
+    void switchPicture(ArrayList<String> imageList, int i, int size)
+    {
+    	i = i + 1;
+    	if (i >= size) i = 0;
+    	modele.setIndex(i);
+    	System.out.println("file:image/"+imageList.get(i));
+    	view.setImageViewValue("file:image/"+imageList.get(i));
+
+    }
+
+	 void endTimer() {
+		// TODO Auto-generated method stub
+modele.getTimer().stop();
+	 	}
 
 }

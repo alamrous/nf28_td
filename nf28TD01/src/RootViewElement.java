@@ -2,6 +2,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -21,6 +22,8 @@ class RootViewElement extends GridPane {
     private Button startButton;
     private Button stopButton;
 
+	private ImageView imageView;
+
     RootViewElement() {
 
         setGridLinesVisible(true);
@@ -37,7 +40,7 @@ class RootViewElement extends GridPane {
 
         this.getColumnConstraints().addAll(col1, col2);
         this.getRowConstraints().add(row1);
-        ImageView imageView = new ImageView("file:image/image0.jpg");
+        imageView = new ImageView("file:image/image0.jpg");
         imageView.setFitHeight(200);
         imageView.setFitWidth(200);
 
@@ -55,6 +58,8 @@ class RootViewElement extends GridPane {
         stopButton.setMinWidth(72);
         stopButton.setDisable(true);
 
+        startButton.setOnAction(evt -> controller.beginTimer());
+        stopButton.setOnAction(evt -> controller.endTimer());
         ButtonContainer.getChildren().addAll(startButton, stopButton);
         mainBorderPane.setCenter(ButtonContainer);
 
@@ -95,8 +100,18 @@ class RootViewElement extends GridPane {
         startButton.setDisable(value.doubleValue() == 0.0);
     }
 
+    void setImageViewValue(String url)
+    {
+    	imageView.setImage(new Image(url));
+    }
+
     void setController(ApplicationController Controller) {
         controller = Controller;
     }
-
+    public Button getStopButton() {
+ 		return stopButton;
+ 	}
+	public void switchStopButton(Boolean bool) {
+		this.stopButton.setDisable(bool);
+	}
 }
