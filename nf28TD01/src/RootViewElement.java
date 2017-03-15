@@ -1,5 +1,3 @@
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -22,7 +20,7 @@ class RootViewElement extends GridPane {
     private Button startButton;
     private Button stopButton;
 
-	private ImageView imageView;
+    private ImageView imageView;
 
     RootViewElement() {
 
@@ -58,13 +56,11 @@ class RootViewElement extends GridPane {
         stopButton.setMinWidth(72);
         stopButton.setDisable(true);
 
-        startButton.setOnAction(evt -> controller.beginTimer());
-        stopButton.setOnAction(evt -> controller.endTimer());
         ButtonContainer.getChildren().addAll(startButton, stopButton);
         mainBorderPane.setCenter(ButtonContainer);
 
-        //Ajout textField + Label
-        javafx.scene.control.Label label = new Label("Intervalle(millis): ");
+        // Ajout textField + Label
+        javafx.scene.control.Label label = new Label("Intervalle (millis) :");
         this.textField = new TextField();
         HBox TextContainer = new HBox();
         TextContainer.getChildren().addAll(label, this.textField);
@@ -77,41 +73,54 @@ class RootViewElement extends GridPane {
         slider.setMinorTickCount(5);
         slider.setBlockIncrement(1);
 
-        //Bindings
-        slider.valueChangingProperty().addListener((obs, wasChanging, isnowChanging) -> controller.sliderValueHasChanged(isnowChanging, slider.getValue()));
-        slider.valueProperty().addListener((obs, oldValue, newValue) -> controller.sliderValueHasChanged(slider.isValueChanging(), newValue.doubleValue()));
-
-        textField.setOnAction(evt -> controller.textFieldValueHasChanged(textField.getText()));
-
-
         mainBorderPane.setBottom(slider);
 
         this.add(mainBorderPane, 0, 0);
         this.add(imageView, 1, 0);
 
+        // Bindings
+        slider.valueChangingProperty().addListener((obs, wasChanging, isnowChanging) -> controller.sliderValueHasChanged(isnowChanging, slider.getValue()));
+        slider.valueProperty().addListener((obs, oldValue, newValue) -> controller.sliderValueHasChanged(slider.isValueChanging(), newValue.doubleValue()));
+
+        textField.setOnAction(evt -> controller.textFieldValueHasChanged(textField.getText(), true));
+
+        startButton.setOnAction(evt -> controller.beginTimer());
+        stopButton.setOnAction(evt -> controller.endTimer());
     }
 
-    void updateIntervalle(Number value) {
-//        System.out.println("1 " + value.doubleValue());
+    void setInterval(Number value) {
         Double val = (value.doubleValue() * 1000.0);
-//        System.out.println("2 " + Math.round(val));
-        textField.setText(Long.toString(Math.round(val)));
+        setTextField(Long.toString(Math.round(val)));
         slider.setValue(value.doubleValue());
         startButton.setDisable(value.doubleValue() == 0.0);
     }
 
-    void setImageViewValue(String url)
-    {
-    	imageView.setImage(new Image(url));
+    void setImageView(Image image) {
+        imageView.setImage(image);
     }
 
-    void setController(ApplicationController Controller) {
-        controller = Controller;
+    TextField getTextField() {
+        return textField;
     }
-    public Button getStopButton() {
- 		return stopButton;
- 	}
-	public void switchStopButton(Boolean bool) {
-		this.stopButton.setDisable(bool);
-	}
+
+    void setTextField(String str) {
+        textField.setText(str);
+    }
+
+
+    void setController(ApplicationController controller) {
+        this.controller = controller;
+    }
+
+    void updateTimerControlsOnAction(boolean timerIsRunning) {
+        this.startButton.setDisable(timerIsRunning);
+        this.slider.setDisable(timerIsRunning);
+        this.textField.setDisable(timerIsRunning);
+
+        this.stopButton.setDisable(!timerIsRunning);
+    }
+
+    void disableStartButton() {
+        this.startButton.setDisable(true);
+    }
 }

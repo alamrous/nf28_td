@@ -1,13 +1,3 @@
-import java.util.ArrayList;
-import java.util.Objects;
-
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.util.Duration;
-
 class ApplicationController {
 
     private RootViewElement view;
@@ -20,53 +10,43 @@ class ApplicationController {
 
     void initialize() {
         this.modele = new Model();
-        modele.intervalleProperty().addListener((obs, oldv, newv) -> view.updateIntervalle(newv));
 
-        //TODO : créer le modèle
+        modele.intervalProperty().addListener((obs, oldv, newv) -> view.setInterval(newv));
+        modele.imageObjectProperty().addListener((obs, oldv, newv) -> view.setImageView(newv));
+        modele.timerIsOverBooleanProperty().addListener((obs, oldv, newv) -> view.updateTimerControlsOnAction(!newv));
     }
 
     void sliderValueHasChanged(boolean isNowChanging, double newvalue) {
-        if (!isNowChanging && modele.intervalleProperty().getValue() != newvalue) {
+        if (!isNowChanging && modele.intervalProperty().getValue() != newvalue) {
 //            System.out.println("Slider VALUE HAS CHANGED! : " + newvalue);
-            modele.intervalleProperty().setValue(newvalue);
+            modele.intervalProperty().setValue(newvalue);
         }
     }
 
-    void textFieldValueHasChanged(String newvalue) {
-        int intervalleVal = (int)(modele.intervalleProperty().getValue() * 1000);
-        int newVal = Integer.parseInt(newvalue);
-        if (intervalleVal != newVal) {
-//            System.out.println("TextField VALUE HAS CHANGED! : " + newvalue);
-//            System.out.println("0 " + ((double)newVal)/1000.0);
-            modele.intervalleProperty().setValue(((double)newVal)/1000.0);
+    void textFieldValueHasChanged(String newvalue, boolean fireStartButton) {
+        int newVal = (newvalue.isEmpty() || !newvalue.matches("\\d+")) ? 0 : Integer.parseInt(newvalue);
+//        System.out.println("TextField VALUE HAS CHANGED! : " + newvalue);
+
+        if (newVal == 0) {
+            view.setTextField("0");
+            view.disableStartButton();
         }
-    }
-    void beginTimer(){
-    	view.getStopButton().setDisable(false);
-    	ArrayList<String> imageList = modele.getImageNames();
-    	Timeline timer = new Timeline(new KeyFrame(
-    	        Duration.millis(modele.intervalleProperty().getValue() * 1000),
-    	        ae -> switchPicture(imageList,modele.getCurrentImageViewIndex(),imageList.size())));
-    	timer.setCycleCount(imageList.size());
-    	timer.setOnFinished(e -> view.switchStopButton(true));
-    	modele.setTimer(timer);
-    	timer.play();
 
-    	//timer.stop();
-    }
-    void switchPicture(ArrayList<String> imageList, int i, int size)
-    {
-    	i = i + 1;
-    	if (i >= size) i = 0;
-    	modele.setIndex(i);
-    	System.out.println("file:image/"+imageList.get(i));
-    	view.setImageViewValue("file:image/"+imageList.get(i));
+        newVal = Math.max(Math.min(newVal, 10000), 0);
+        modele.intervalProperty().setValue(((double) newVal) / 1000.0);
 
+        if (fireStartButton) beginTimer();
     }
 
-	 void endTimer() {
-		// TODO Auto-generated method stub
-modele.getTimer().stop();
-	 	}
+    void beginTimer() {
+        textFieldValueHasChanged(view.getTextField().getText(), false);
+        if (modele.intervalProperty().getValue() != 0.0)
+            modele.startTimer((long) (modele.intervalProperty().getValue() * 1000));
+    }
+
+
+    void endTimer() {
+        modele.stopTimer();
+    }
 
 }

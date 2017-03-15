@@ -1,65 +1,103 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.animation.Timeline;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 class Model {
 
     private ArrayList<String> imageNames = null;
-   	private DoubleProperty intervalle;
+
+    private DoubleProperty interval;
+    private BooleanProperty timerIsOver;
     private ObjectProperty<Image> image;
-    private Timeline timer;
-    private int index;
 
+    private int indexImage;
+    private Timer timer;
 
-	Model() {
-        super();
-        intervalle = new SimpleDoubleProperty();
-        image = new SimpleObjectProperty<>();
-        initializeImages();
-        index = 0;
-        timer = new Timeline();
-    }
-	public void setTimer(Timeline timer){
-		this.timer = timer;
-	}
-	public Timeline getTimer(){
-		return timer;
+    class ImageTimerTask extends TimerTask {
 
-	}
-
-    public void setIndex(int index) {
-		this.index = index;
-	}
-    DoubleProperty intervalleProperty() {
-        return intervalle;
-    }
-   public int getCurrentImageViewIndex()
-   {
-	   return  index;
-   }
-    private void initializeImages() {
-        File f = new File("image");
-        imageNames = new ArrayList<>(Arrays.asList(f.list()));
-        for (String imageName : imageNames) {
-            System.out.println("Nom : " + imageName);
+        @Override
+        public void run() {
+            if (indexImage >= imageNames.size() - 2) {
+                indexImage = 0;
+                stopTimer();
+                return;
+            }
+            changeImage();
         }
     }
-    public ArrayList<String> getImageNames() {
-		return imageNames;
-	}
 
 
+    Model() {
+        interval = new SimpleDoubleProperty();
+        image = new SimpleObjectProperty<>();
+        timerIsOver = new SimpleBooleanProperty(true);
+        initializeImages();
+        indexImage = 0;
+    }
 
+    private void changeImage() {
+        indexImage++;
+        System.out.println(getCurrentImageName());
+        image.setValue(new Image("file:image/" + getCurrentImageName()));
+    }
+
+    void startTimer(long periodms) {
+        timer = new Timer();
+        ImageTimerTask task = new ImageTimerTask();
+        timer.schedule(task, 0, periodms);
+        timerIsOver.setValue(false);
+    }
+
+    void stopTimer() {
+        indexImage = 0;
+        image.setValue(new Image("file:image/" + getCurrentImageName()));
+        timerIsOver.setValue(true);
+        timer.cancel();
+    }
+
+
+    private void initializeImages() {
+        try {
+            File f = new File("image");
+            if (f.list() == null) {
+                throw new FileNotFoundException("Could not find files in image dir");
+            }
+
+            imageNames = new ArrayList<>(Arrays.asList(f.list()));
+            for (String imageName : imageNames) {
+                System.out.println("Nom : " + imageName);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getCurrentImageName() {
+        return imageNames.get(indexImage);
+    }
+
+
+    /************************************
+     * Properties getters
+     ***********************************/
+
+    DoubleProperty intervalProperty() {
+        return interval;
+    }
+
+    ObjectProperty<Image> imageObjectProperty() {
+        return image;
+    }
+
+    BooleanProperty timerIsOverBooleanProperty() {
+        return timerIsOver;
+    }
 
 }
