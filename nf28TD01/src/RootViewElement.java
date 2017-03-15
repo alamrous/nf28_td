@@ -1,15 +1,13 @@
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 
 class RootViewElement extends GridPane {
 
@@ -24,13 +22,12 @@ class RootViewElement extends GridPane {
 
     RootViewElement() {
 
-        setGridLinesVisible(true);
-
         BorderPane mainBorderPane = new BorderPane();
-        mainBorderPane.setPadding(new Insets(10));
+        mainBorderPane.setPadding(new Insets(20));
 
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(50);
+        col1.setMinWidth(600);
         ColumnConstraints col2 = new ColumnConstraints();
         col2.setPercentWidth(50);
         RowConstraints row1 = new RowConstraints();
@@ -38,34 +35,47 @@ class RootViewElement extends GridPane {
 
         this.getColumnConstraints().addAll(col1, col2);
         this.getRowConstraints().add(row1);
-        imageView = new ImageView("file:image/image0.jpg");
-        imageView.setFitHeight(200);
-        imageView.setFitWidth(200);
 
-        //Ajout boutons
-        HBox ButtonContainer = new HBox();
-        ButtonContainer.setSpacing(16);
+        /* ------------------ */
+        /* Add mainBorderPane */
+        /* ------------------ */
 
+        VBox controlsBox = new VBox();
+        controlsBox.setSpacing(40);
+        controlsBox.setAlignment(Pos.CENTER);
+
+        // Ajout textField + Label
+        Label label = new Label("Intervalle\n(millis) :");
+        label.setMinWidth(100);
+
+        this.textField = new TextField();
+        textField.setMinWidth(100);
+
+        HBox TextContainer = new HBox();
+        TextContainer.setSpacing(5);
+        TextContainer.setMinWidth(100);
+        TextContainer.setPadding(new Insets(10));
+        TextContainer.setAlignment(Pos.CENTER);
+        TextContainer.setBackground(new Background(new BackgroundFill(Color.web("#" + "E8E8E8"), new CornerRadii(15), Insets.EMPTY)));
+        TextContainer.getChildren().addAll(label, this.textField);
+
+        // Ajout boutons
         startButton = new Button("Start");
         startButton.setPadding(new Insets(6));
-        startButton.setMinWidth(72);
+        startButton.setMinWidth(80);
         startButton.setDisable(true);
 
         stopButton = new Button("Stop");
         stopButton.setPadding(new Insets(6));
-        stopButton.setMinWidth(72);
+        stopButton.setMinWidth(80);
         stopButton.setDisable(true);
 
+        HBox ButtonContainer = new HBox();
+        ButtonContainer.setSpacing(20);
+        ButtonContainer.setAlignment(Pos.CENTER);
         ButtonContainer.getChildren().addAll(startButton, stopButton);
-        mainBorderPane.setCenter(ButtonContainer);
 
-        // Ajout textField + Label
-        javafx.scene.control.Label label = new Label("Intervalle (millis) :");
-        this.textField = new TextField();
-        HBox TextContainer = new HBox();
-        TextContainer.getChildren().addAll(label, this.textField);
-        mainBorderPane.setTop(TextContainer);
-
+        // Ajout slider
         slider = new Slider(0, 10, 0);
         slider.setShowTickLabels(true);
         slider.setShowTickMarks(true);
@@ -73,10 +83,29 @@ class RootViewElement extends GridPane {
         slider.setMinorTickCount(5);
         slider.setBlockIncrement(1);
 
-        mainBorderPane.setBottom(slider);
+        controlsBox.getChildren().addAll(TextContainer ,ButtonContainer, slider);
+
+        mainBorderPane.setCenter(controlsBox);
 
         this.add(mainBorderPane, 0, 0);
-        this.add(imageView, 1, 0);
+
+        /* ------------- */
+        /* Add imagePane */
+        /* ------------- */
+
+        // Add imageView
+        imageView = new ImageView("file:image/image0.jpg");
+        imageView.setFitHeight(200);
+        imageView.setFitWidth(200);
+
+        StackPane imagePane = new StackPane();
+        imagePane.setPrefSize(400,300);
+        imagePane.setBackground(new Background(new BackgroundFill(Color.web("#" + "E8E8E8"), CornerRadii.EMPTY, Insets.EMPTY)));
+        imagePane.getChildren().add(imageView);
+
+        StackPane.setAlignment(imageView, Pos.CENTER);
+
+        this.add(imagePane, 1, 0);
 
         // Bindings
         slider.valueChangingProperty().addListener((obs, wasChanging, isnowChanging) -> controller.sliderValueHasChanged(isnowChanging, slider.getValue()));

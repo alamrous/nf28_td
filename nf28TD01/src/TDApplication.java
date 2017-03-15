@@ -18,9 +18,10 @@ public class TDApplication extends Application {
 
         // 4. binding Model -> Controller -> view
         controller.initialize();
-        Scene scene = new Scene(root, 800, 300);
+        Scene scene = new Scene(root, 600, 300);
         stage.setScene(scene);
         stage.setTitle("Affichage d'images");
+        stage.setResizable(false);
         stage.show();
     }
 
