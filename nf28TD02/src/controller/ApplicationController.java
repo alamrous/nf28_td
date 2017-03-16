@@ -13,9 +13,9 @@ import javafx.scene.image.ImageView;
 import model.Model;
 
 public class ApplicationController implements Initializable {
-	
+
     private Model modele;
-    
+
     @FXML
     private TextField textField;
     @FXML
@@ -27,54 +27,55 @@ public class ApplicationController implements Initializable {
 
     @FXML
     private ImageView imageView;
-    
-    void setInterval(Number value) {
+
+    private void setInterval(Number value) {
         Double val = (value.doubleValue() * 1000.0);
         setTextField(Long.toString(Math.round(val)));
         slider.setValue(value.doubleValue());
         startButton.setDisable(value.doubleValue() == 0.0);
     }
-    
-    void setImageView(Image image) {
+
+    private void setImageView(Image image) {
         imageView.setImage(image);
     }
 
-    TextField getTextField() {
+    private TextField getTextField() {
         return textField;
     }
 
-    void updateTimerControlsOnAction(boolean timerIsRunning) {
+    private void updateTimerControlsOnAction(boolean timerIsRunning) {
         this.startButton.setDisable(timerIsRunning);
         this.slider.setDisable(timerIsRunning);
         this.textField.setDisable(timerIsRunning);
 
         this.stopButton.setDisable(!timerIsRunning);
     }
-    
-    
-    void setTextField(String str) {
+
+
+    private void setTextField(String str) {
         textField.setText(str);
     }
-    void disableStartButton() {
+
+    private void disableStartButton() {
         this.startButton.setDisable(true);
     }
 
-    void sliderValueHasChanged(boolean isNowChanging, double newvalue) {
+    private void sliderValueHasChanged(boolean isNowChanging, double newvalue) {
         if (!isNowChanging && modele.intervalProperty().getValue() != newvalue) {
 //            System.out.println("Slider VALUE HAS CHANGED! : " + newvalue);
             modele.intervalProperty().setValue(newvalue);
         }
     }
 
-    void textFieldValueHasChanged(String newvalue, boolean fireStartButton) {
-    	int newVal = 0;
-    	
-    	try {
-        newVal = (newvalue.isEmpty() || !newvalue.matches("\\d+")) ? 0 : Integer.parseInt(newvalue);
+    private void textFieldValueHasChanged(String newvalue, boolean fireStartButton) {
+        int newVal;
+
+        try {
+            newVal = (newvalue.isEmpty() || !newvalue.matches("\\d+")) ? 0 : Integer.parseInt(newvalue);
 //        System.out.println("TextField VALUE HAS CHANGED! : " + newvalue);
-    	} catch (NumberFormatException e) {
-    		newVal = 10000;
-    	}
+        } catch (NumberFormatException e) {
+            newVal = 10000;
+        }
 
         if (newVal == 0) {
             setTextField("0");
@@ -87,30 +88,28 @@ public class ApplicationController implements Initializable {
         if (fireStartButton) beginTimer();
     }
 
-    void beginTimer() {
+    private void beginTimer() {
         textFieldValueHasChanged(getTextField().getText(), false);
         if (modele.intervalProperty().getValue() != 0.0)
             modele.startTimer((long) (modele.intervalProperty().getValue() * 1000));
     }
 
 
-    void endTimer() {
+    private void endTimer() {
         modele.stopTimer();
     }
 
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
-		
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
         this.modele = new Model();
-        
-        
+
 
         modele.intervalProperty().addListener((obs, oldv, newv) -> setInterval(newv));
         modele.imageObjectProperty().addListener((obs, oldv, newv) -> setImageView(newv));
         modele.timerIsOverBooleanProperty().addListener((obs, oldv, newv) -> updateTimerControlsOnAction(!newv));
-        
-        
+
+
         // Bindings
         slider.valueChangingProperty().addListener((obs, wasChanging, isnowChanging) -> sliderValueHasChanged(isnowChanging, slider.getValue()));
         slider.valueProperty().addListener((obs, oldValue, newValue) -> sliderValueHasChanged(slider.isValueChanging(), newValue.doubleValue()));
@@ -119,10 +118,8 @@ public class ApplicationController implements Initializable {
 
         startButton.setOnAction(evt -> beginTimer());
         stopButton.setOnAction(evt -> endTimer());
-        
-        
-		
-		
-	}
+
+
+    }
 
 }
