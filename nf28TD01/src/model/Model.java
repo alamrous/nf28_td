@@ -1,3 +1,5 @@
+package model;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -5,11 +7,10 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javafx.animation.Timeline;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
 
-class Model {
+public class Model {
 
     private ArrayList<String> imageNames = null;
 
@@ -34,7 +35,7 @@ class Model {
     }
 
 
-    Model() {
+    public Model() {
         interval = new SimpleDoubleProperty();
         image = new SimpleObjectProperty<>();
         timerIsOver = new SimpleBooleanProperty(true);
@@ -48,14 +49,14 @@ class Model {
         image.setValue(new Image("file:image/" + getCurrentImageName()));
     }
 
-    void startTimer(long periodms) {
+    public void startTimer(long periodms) {
         timer = new Timer();
         ImageTimerTask task = new ImageTimerTask();
         timer.schedule(task, 0, periodms);
         timerIsOver.setValue(false);
     }
 
-    void stopTimer() {
+    public void stopTimer() {
         indexImage = 0;
         image.setValue(new Image("file:image/" + getCurrentImageName()));
         timerIsOver.setValue(true);
@@ -88,15 +89,15 @@ class Model {
      * Properties getters
      ***********************************/
 
-    DoubleProperty intervalProperty() {
+    public DoubleProperty intervalProperty() {
         return interval;
     }
 
-    ObjectProperty<Image> imageObjectProperty() {
+    public ObjectProperty<Image> imageObjectProperty() {
         return image;
     }
 
-    BooleanProperty timerIsOverBooleanProperty() {
+    public BooleanProperty timerIsOverBooleanProperty() {
         return timerIsOver;
     }
 

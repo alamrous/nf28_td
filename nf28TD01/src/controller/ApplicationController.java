@@ -1,14 +1,19 @@
-class ApplicationController {
+package controller;
+
+import model.Model;
+import view.RootViewElement;
+
+public class ApplicationController {
 
     private RootViewElement view;
     private Model modele;
 
 
-    ApplicationController(RootViewElement root) {
+    public ApplicationController(RootViewElement root) {
         this.view = root;
     }
 
-    void initialize() {
+    public void initialize() {
         this.modele = new Model();
 
         modele.intervalProperty().addListener((obs, oldv, newv) -> view.setInterval(newv));
@@ -16,14 +21,14 @@ class ApplicationController {
         modele.timerIsOverBooleanProperty().addListener((obs, oldv, newv) -> view.updateTimerControlsOnAction(!newv));
     }
 
-    void sliderValueHasChanged(boolean isNowChanging, double newvalue) {
+    public void sliderValueHasChanged(boolean isNowChanging, double newvalue) {
         if (!isNowChanging && modele.intervalProperty().getValue() != newvalue) {
 //            System.out.println("Slider VALUE HAS CHANGED! : " + newvalue);
             modele.intervalProperty().setValue(newvalue);
         }
     }
 
-    void textFieldValueHasChanged(String newvalue, boolean fireStartButton) {
+    public void textFieldValueHasChanged(String newvalue, boolean fireStartButton) {
         int newVal = (newvalue.isEmpty() || !newvalue.matches("\\d+")) ? 0 : Integer.parseInt(newvalue);
 //        System.out.println("TextField VALUE HAS CHANGED! : " + newvalue);
 
@@ -38,14 +43,14 @@ class ApplicationController {
         if (fireStartButton) beginTimer();
     }
 
-    void beginTimer() {
+    public void beginTimer() {
         textFieldValueHasChanged(view.getTextField().getText(), false);
         if (modele.intervalProperty().getValue() != 0.0)
             modele.startTimer((long) (modele.intervalProperty().getValue() * 1000));
     }
 
 
-    void endTimer() {
+    public void endTimer() {
         modele.stopTimer();
     }
 

@@ -1,3 +1,6 @@
+package view;
+
+import controller.ApplicationController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -9,7 +12,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
-class RootViewElement extends GridPane {
+public class RootViewElement extends GridPane {
 
     private ApplicationController controller;
 
@@ -20,7 +23,7 @@ class RootViewElement extends GridPane {
 
     private ImageView imageView;
 
-    RootViewElement() {
+    public RootViewElement() {
 
         BorderPane mainBorderPane = new BorderPane();
         mainBorderPane.setPadding(new Insets(20));
@@ -117,31 +120,31 @@ class RootViewElement extends GridPane {
         stopButton.setOnAction(evt -> controller.endTimer());
     }
 
-    void setInterval(Number value) {
+    public void setInterval(Number value) {
         Double val = (value.doubleValue() * 1000.0);
         setTextField(Long.toString(Math.round(val)));
         slider.setValue(value.doubleValue());
         startButton.setDisable(value.doubleValue() == 0.0);
     }
 
-    void setImageView(Image image) {
+    public void setImageView(Image image) {
         imageView.setImage(image);
     }
 
-    TextField getTextField() {
+    public TextField getTextField() {
         return textField;
     }
 
-    void setTextField(String str) {
+    public void setTextField(String str) {
         textField.setText(str);
     }
 
 
-    void setController(ApplicationController controller) {
+    public void setController(ApplicationController controller) {
         this.controller = controller;
     }
 
-    void updateTimerControlsOnAction(boolean timerIsRunning) {
+    public void updateTimerControlsOnAction(boolean timerIsRunning) {
         this.startButton.setDisable(timerIsRunning);
         this.slider.setDisable(timerIsRunning);
         this.textField.setDisable(timerIsRunning);
@@ -149,7 +152,7 @@ class RootViewElement extends GridPane {
         this.stopButton.setDisable(!timerIsRunning);
     }
 
-    void disableStartButton() {
+    public void disableStartButton() {
         this.startButton.setDisable(true);
     }
 }
