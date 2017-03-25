@@ -1,9 +1,13 @@
 package model;
 
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Address {
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class Address implements PropertiesMappable {
 
     private StringProperty streetLine;
     private StringProperty postalCode;
@@ -11,10 +15,10 @@ public class Address {
     private StringProperty country;
 
     Address() {
-        streetLine = new SimpleStringProperty();
-        postalCode = new SimpleStringProperty();
-        city = new SimpleStringProperty();
-        country = new SimpleStringProperty();
+        streetLine = new SimpleStringProperty("");
+        postalCode = new SimpleStringProperty("");
+        city = new SimpleStringProperty("");
+        country = new SimpleStringProperty("");
     }
 
     public StringProperty streetLineProperty() {
@@ -31,5 +35,16 @@ public class Address {
 
     public StringProperty countryProperty() {
         return country;
+    }
+
+    public Map<String, Property> toPropertiesMap() {
+
+        Map<String, Property> members = new LinkedHashMap<>();
+        members.put("streetLine", streetLine);
+        members.put("postalCode", postalCode);
+        members.put("city", city);
+        members.put("country", country);
+
+        return members;
     }
 }
