@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.util.Callback;
 import model.Contact;
 import model.Country;
 import model.Group;
@@ -69,6 +70,22 @@ public class ApplicationController implements Initializable {
     }
 
     private void initDatePicker() {
+        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item.isAfter(LocalDate.now())) {
+                            setDisable(true);
+                        }
+                    }
+                };
+            }
+        };
+        birthDatePicker.setDayCellFactory(dayCellFactory);
+
+
         birthDatePicker.setValue(LocalDate.now());
         setBirthDate(birthDatePicker.getValue());
     }
