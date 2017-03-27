@@ -2,6 +2,8 @@ package model;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -18,6 +20,8 @@ public class Contact implements PropertiesMappable {
 
     private ObservableMap<String, String> errors;
     private List<String> incorrectFields;
+    private static Pattern pattern;
+    private static Matcher matcher;
 
     public Contact() {
         name = new SimpleStringProperty("");
@@ -39,10 +43,83 @@ public class Contact implements PropertiesMappable {
         incorrectFields.clear();
 
         checkNonEmpty(toPropertiesMap());
+        if(incorrectFields.isEmpty())
+        {
+        	checkCorrectField(toPropertiesMap());
+        }
+
 
 //        System.out.println("incorrectFields: " + incorrectFields);
 
         errors.entrySet().removeIf(entry -> !incorrectFields.contains(entry.getKey()));
+    }
+    private void checkCorrectField(Map<String, Property> members) {
+
+        members.forEach((s, property) -> {
+            if (property.getValue().getClass() == String.class) {
+
+                String val = property.getValue().toString();
+                System.out.println("key: " + s);
+//                System.out.println("val: " + property.getValue());
+                if(s.contains("name"))
+                {
+
+                	 pattern = Pattern.compile("((?i)^[a-z]+([-]([a-z]+))*$)");
+                 	matcher = pattern.matcher(val);
+                 	if(matcher.find() == false)
+                 	{
+                 	      errors.put(s, "Ce champ n'est pas entré correctement  !");
+                          incorrectFields.add(s);
+                 	}
+                 	else
+                 	incorrectFields.remove(	s);
+                }
+                else if (s.contentEquals("streetLine"))
+                {
+                  	 pattern = Pattern.compile("((?i)[0-9]+[a-z]*[\\s]([a-z]+[\\s]*)+$)");
+                  	matcher = pattern.matcher(val);
+                  	if(matcher.find() == false)
+                  	{
+                  	      errors.put(s, "Ce champ n'est pas entré correctement  !");
+                           incorrectFields.add(s);
+                  	}
+                  	else
+                  	incorrectFields.remove(	s);
+
+                }
+                else if (s.contentEquals("postalCode"))
+                {
+                	 pattern = Pattern.compile("(^[0-9]{5}$)");
+                   	matcher = pattern.matcher(val);
+                   	if(matcher.find() == false)
+                   	{
+                   	      errors.put(s, "Ce champ n'est pas entré correctement  !");
+                            incorrectFields.add(s);
+                   	}
+                   	else
+                   	incorrectFields.remove(	s);
+                }
+                else if (s.contentEquals("city"))
+                {
+                	 pattern = Pattern.compile("(?i)^(([a-z]+[\\s]*)+)$");
+                   	matcher = pattern.matcher(val);
+                   	if(matcher.find() == false)
+                   	{
+                   	      errors.put(s, "Ce champ n'est pas entré correctement !");
+                            incorrectFields.add(s);
+                   	}
+                   	else
+                   	incorrectFields.remove(	s);
+                }
+
+
+
+            } else {
+                PropertiesMappable member = (PropertiesMappable) property.getValue();
+                checkCorrectField(member.toPropertiesMap());
+            }
+        });
+
     }
 
     private void checkNonEmpty(Map<String, Property> members) {
