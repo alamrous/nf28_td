@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
@@ -20,11 +25,11 @@
 
 <!--suppress ALL -->
 
-<StackPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ApplicationController">
+<StackPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ApplicationController">
     <children>
         <VBox alignment="CENTER" spacing="10.0" StackPane.alignment="CENTER">
             <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold; -fx-font-size: 18; -fx-font-family: Helvetica;" text="TD03 - Formulaire de contacts" textAlignment="CENTER" />
+                  <Text id="title" strokeType="OUTSIDE" strokeWidth="0.0" text="TD03 - Formulaire de contacts" textAlignment="CENTER" />
                 <TitledPane animated="false" collapsible="false" text="Nom et prénom">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0">
