@@ -20,8 +20,8 @@ public class Contact implements PropertiesMappable {
 
     private ObservableMap<String, String> errors;
     private List<String> incorrectFields;
-    private static Pattern pattern;
-    private static Matcher matcher;
+
+    private static String DEFAULT_ERROR_MESSAGE = "Ce champ n'est pas renseignÃ© correctement !";
 
     public Contact() {
         name = new SimpleStringProperty("");
@@ -43,77 +43,57 @@ public class Contact implements PropertiesMappable {
         incorrectFields.clear();
 
         checkNonEmpty(toPropertiesMap());
-        if(incorrectFields.isEmpty())
-        {
-        	checkCorrectField(toPropertiesMap());
-        }
 
+        checkCorrectField(toPropertiesMap());
 
 //        System.out.println("incorrectFields: " + incorrectFields);
 
         errors.entrySet().removeIf(entry -> !incorrectFields.contains(entry.getKey()));
+
+//        System.out.println("errors: " + errors);
     }
+
     private void checkCorrectField(Map<String, Property> members) {
 
         members.forEach((s, property) -> {
+
+            Pattern pattern;
+            Matcher matcher;
+
             if (property.getValue().getClass() == String.class) {
 
-                String val = property.getValue().toString();
-                System.out.println("key: " + s);
-//                System.out.println("val: " + property.getValue());
-                if(s.contains("name"))
-                {
+                if (!incorrectFields.contains(s)) {
 
-                	 pattern = Pattern.compile("((?i)^[a-z]+([-]([a-z]+))*$)");
-                 	matcher = pattern.matcher(val);
-                 	if(matcher.find() == false)
-                 	{
-                 	      errors.put(s, "Ce champ n'est pas entré correctement  !");
-                          incorrectFields.add(s);
-                 	}
-                 	else
-                 	incorrectFields.remove(	s);
+                    String val = property.getValue().toString();
+
+//                    System.out.println("key: " + s);
+//                    System.out.println("val: " + property.getValue());
+
+                    switch (s) {
+                        case "name":
+                        case "firstname":
+                            pattern = Pattern.compile("(?i)(?=.{2,100})\\p{L}+(?:[-'\\s]?\\p{L}+)*");
+                            break;
+                        case "streetLine":
+                            pattern = Pattern.compile("(?i)(?=.{2,100})[0-9]+\\p{L}*\\s\\p{L}+(?:[-'\\s]?\\p{L}+)*");
+                            break;
+                        case "postalCode":
+                            pattern = Pattern.compile("(?=.{2,10})[0-9]{4,}");
+                            break;
+                        case "city":
+                            pattern = Pattern.compile("(?i)(?=.{2,100})\\p{L}+(?:[-'\\s]?\\p{L}+)*");
+                            break;
+                        default:
+                            pattern = Pattern.compile("");
+                            break;
+                    }
+
+                    matcher = pattern.matcher(val);
+                    if (!matcher.matches()) {
+                        errors.put(s, DEFAULT_ERROR_MESSAGE);
+                        incorrectFields.add(s);
+                    }
                 }
-                else if (s.contentEquals("streetLine"))
-                {
-                  	 pattern = Pattern.compile("((?i)[0-9]+[a-z]*[\\s]([a-z]+[\\s]*)+$)");
-                  	matcher = pattern.matcher(val);
-                  	if(matcher.find() == false)
-                  	{
-                  	      errors.put(s, "Ce champ n'est pas entré correctement  !");
-                           incorrectFields.add(s);
-                  	}
-                  	else
-                  	incorrectFields.remove(	s);
-
-                }
-                else if (s.contentEquals("postalCode"))
-                {
-                	 pattern = Pattern.compile("(^[0-9]{5}$)");
-                   	matcher = pattern.matcher(val);
-                   	if(matcher.find() == false)
-                   	{
-                   	      errors.put(s, "Ce champ n'est pas entré correctement  !");
-                            incorrectFields.add(s);
-                   	}
-                   	else
-                   	incorrectFields.remove(	s);
-                }
-                else if (s.contentEquals("city"))
-                {
-                	 pattern = Pattern.compile("(?i)^(([a-z]+[\\s]*)+)$");
-                   	matcher = pattern.matcher(val);
-                   	if(matcher.find() == false)
-                   	{
-                   	      errors.put(s, "Ce champ n'est pas entré correctement !");
-                            incorrectFields.add(s);
-                   	}
-                   	else
-                   	incorrectFields.remove(	s);
-                }
-
-
-
             } else {
                 PropertiesMappable member = (PropertiesMappable) property.getValue();
                 checkCorrectField(member.toPropertiesMap());
@@ -135,8 +115,6 @@ public class Contact implements PropertiesMappable {
                     errors.put(s, "Ce champ est obligatoire !");
                     incorrectFields.add(s);
                 }
-                else
-                    incorrectFields.remove(s);
 
             } else {
                 PropertiesMappable member = (PropertiesMappable) property.getValue();

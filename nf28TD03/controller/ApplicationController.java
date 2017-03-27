@@ -134,7 +134,6 @@ public class ApplicationController implements Initializable {
             }
         }
 
-
     }
 
     private void addErrorMessage(String fieldname, String error) {
@@ -143,8 +142,7 @@ public class ApplicationController implements Initializable {
     }
 
     private void removeErrorMessage(String fieldname) {
-        ObservableList<String> styleClasses = fieldNamesMap.get(fieldname).getStyleClass();
-        styleClasses.remove(styleClasses.indexOf("error"));
+        fieldNamesMap.get(fieldname).getStyleClass().removeAll("error");
         fieldNamesMap.get(fieldname).setTooltip(null);
     }
 
@@ -192,8 +190,8 @@ public class ApplicationController implements Initializable {
 
         MapChangeListener<String, String> listener = changed -> {
             if (changed.wasAdded()) {
-                System.out.println("oops, i have received an error message: " +
-                        changed.getKey() + " " + changed.getValueAdded());
+//                System.out.println("oops, i have received an error message: " +
+//                        changed.getKey() + " " + changed.getValueAdded());
                 addErrorMessage(changed.getKey(), changed.getValueAdded());
             } else if (changed.wasRemoved()) {
                 removeErrorMessage(changed.getKey());
