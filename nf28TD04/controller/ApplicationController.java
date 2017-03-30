@@ -10,13 +10,11 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import model.Contact;
 import model.Country;
@@ -66,7 +64,7 @@ public class ApplicationController implements Initializable {
 
         private TextField textField;
 
-        public TextFieldTreeCellImpl() {
+        TextFieldTreeCellImpl() {
         }
 
         @Override
@@ -80,6 +78,7 @@ public class ApplicationController implements Initializable {
             if (textField == null) {
                 createTextField();
             }
+
             setText(null);
             setGraphic(textField);
             textField.selectAll();
@@ -117,15 +116,12 @@ public class ApplicationController implements Initializable {
             textField = new TextField(getString());
             textField.setOnKeyReleased(t -> {
                 if (t.getCode() == KeyCode.ENTER) {
-                    System.out.println("ENTER");
 
-                    if (model.groupExists(getString()))
-                        return;
+                    String newName = textField.getText();
 
-                    // modifier le modèle ici
-                    model.getGroups().get(model.getGroups().indexOf(getItem())).setName(getString());
+                    model.setGroupName((Group) getItem(), newName);
 
-                    commitEdit(getTreeItem());
+                    commitEdit(getItem());
 
                 } else if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -259,9 +255,8 @@ public class ApplicationController implements Initializable {
 
         TreeItem<Object> item = groupTreeView.getSelectionModel().getSelectedItem();
 
-        if (item == null || Objects.equals(item.toString(), "Fiche de contacts")) {
+        if (item == null || Objects.equals(item.getValue(), "Fiche de contacts")) {
             // Root -> create a group
-
             addGroup();
         } else {
             addContactItem();

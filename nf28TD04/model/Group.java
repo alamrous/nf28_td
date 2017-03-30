@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Group {
 
-    private static String DEFAULT_GROUP_NAME = "Nouveau groupe";
+    static String DEFAULT_GROUP_NAME = "Nouveau groupe";
     private static Image DEFAULT_GROUP_ICON = new Image("file:view/group.png");
 
     private ObservableList<Contact> contacts;
@@ -20,7 +20,11 @@ public class Group {
     private Image icon;
 
     Group() {
-        name = DEFAULT_GROUP_NAME;
+        this(DEFAULT_GROUP_NAME);
+    }
+
+    Group(String groupName) {
+        name = groupName;
         icon = DEFAULT_GROUP_ICON;
         contacts = FXCollections.observableArrayList();
     }
@@ -50,7 +54,7 @@ public class Group {
         contacts.remove(getContact(id));
     }
 
-    public String getName() {
+    String getName() {
         return name;
     }
 
@@ -58,7 +62,7 @@ public class Group {
         return icon;
     }
 
-    public void setName(String name) {
+    void setName(String name) {
         this.name = name;
     }
 

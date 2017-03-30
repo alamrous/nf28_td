@@ -163,7 +163,7 @@ public class Contact implements PropertiesMappable {
         return gender;
     }
 
-    public String getId() {
+    String getId() {
         return id;
     }
 
