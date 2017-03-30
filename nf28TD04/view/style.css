@@ -1,0 +1,19 @@
+* {
+    -fx-font-family: Helvetica, sans-serif;
+}
+
+#title {
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+.text-field {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: -fx-control-inner-background;
+    -fx-border-color: #cbcbcb;
+}
+
+.text-field.error {
+    -fx-border-color: red;
+}
