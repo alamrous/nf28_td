@@ -175,4 +175,9 @@ public class Contact implements PropertiesMappable {
         return group;
     }
 
+    @Override
+    public String toString() {
+        return this.firstname + " " + this.name;
+    }
+
 }

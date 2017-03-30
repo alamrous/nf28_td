@@ -2,6 +2,7 @@ package model;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,12 +11,17 @@ import java.util.List;
 
 public class Group {
 
+    private static String DEFAULT_GROUP_NAME = "Nouveau groupe";
+    private static Image DEFAULT_GROUP_ICON = new Image("file:view/group.png");
+
     private ObservableList<Contact> contacts;
 
     private String name;
+    private Image icon;
 
-    Group(String groupName) {
-        name = groupName;
+    Group() {
+        name = DEFAULT_GROUP_NAME;
+        icon = DEFAULT_GROUP_ICON;
         contacts = FXCollections.observableArrayList();
     }
 
@@ -34,33 +40,35 @@ public class Group {
         return contact;
     }
 
-    String createContact() {
+    public String addContact() {
         Contact c = new Contact();
         contacts.add(c);
         return c.getId();
     }
 
-    void removeContact(String id) {
+    public void removeContact(String id) {
         contacts.remove(getContact(id));
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-//    static private List<String> groupList = new ArrayList<>();
+    public Image getIcon() {
+        return icon;
+    }
 
-//    public static List<String> getGroupList() {
-//        groupList.add("Parti républicain");
-//        groupList.add("Parti démocrate");
-//        groupList.add("Modem");
-//        groupList.add("Parti communiste");
-//        groupList.add("Parti anarchiste");
-//        groupList.add("Parti écologiste");
-//        groupList.add("Front national");
-//        groupList.add("Parti socialiste");
-//        Collections.sort(groupList);
-//        return groupList;
-//    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIcon(Image icon) {
+        this.icon = icon;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 
 }

@@ -2,6 +2,7 @@ package model;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +17,7 @@ public class Model {
         groups = FXCollections.observableArrayList();
     }
 
-    private boolean groupExists(String name) {
+    public boolean groupExists(String name) {
         Iterator<Group> it = groups.iterator();
         boolean found = false;
 
@@ -44,20 +45,23 @@ public class Model {
         return group;
     }
 
-    void createGroup(String groupName) {
-        if (!groupExists(groupName))
-            groups.add(new Group(groupName));
+    public void addGroup() {
+        groups.add(new Group());
     }
 
-    void removeGroup(String groupName) {
+    public void removeGroup(String groupName) {
         groups.remove(getGroup(groupName));
     }
 
-    public List<String> getGroupList() {
+    public List<String> getGroupNamesList() {
 //        String[] a = (String[]) groups.toArray();
         List<String> groupList = Arrays.asList((String[]) groups.toArray());
         Collections.sort(groupList);
         return groupList;
+    }
+
+    public ObservableList<Group> getGroups() {
+        return groups;
     }
 
 }

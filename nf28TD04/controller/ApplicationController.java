@@ -4,14 +4,19 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import model.Contact;
 import model.Country;
@@ -25,7 +30,8 @@ public class ApplicationController implements Initializable {
 
     private Map<String, Control> fieldNamesMap;
 
-
+    @FXML
+    private TreeView<Object> groupTreeView;
     @FXML
     private TextField nameTextField;
     @FXML
@@ -50,6 +56,95 @@ public class ApplicationController implements Initializable {
     private ChoiceBox<String> groupChoiceBox;
     @FXML
     private Button saveButton;
+    @FXML
+    private Button addButton;
+    @FXML
+    private Button removeButton;
+
+
+    private final class TextFieldTreeCellImpl extends TreeCell<Object> {
+
+        private TextField textField;
+
+        public TextFieldTreeCellImpl() {
+        }
+
+        @Override
+        public void startEdit() {
+            super.startEdit();
+
+            // Only groups are editabled
+            if (getItem().getClass() != Group.class)
+                return;
+
+            if (textField == null) {
+                createTextField();
+            }
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            setText(getItem().toString());
+            setGraphic(getTreeItem().getGraphic());
+        }
+
+        @Override
+        public void updateItem(Object item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(getString());
+                    setGraphic(getTreeItem().getGraphic());
+                }
+            }
+        }
+
+        private void createTextField() {
+            textField = new TextField(getString());
+            textField.setOnKeyReleased(t -> {
+                if (t.getCode() == KeyCode.ENTER) {
+                    System.out.println("ENTER");
+
+                    if (model.groupExists(getString()))
+                        return;
+
+                    // modifier le modèle ici
+                    model.getGroups().get(model.getGroups().indexOf(getItem())).setName(getString());
+
+                    commitEdit(getTreeItem());
+
+                } else if (t.getCode() == KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
+
+
+    private void initTreeView() {
+        TreeItem<Object> rootItem = new TreeItem<>("Fiche de contacts");
+        rootItem.setExpanded(true);
+        groupTreeView.setRoot(rootItem);
+        groupTreeView.setEditable(true);
+    }
 
     private void initCountryList() {
         countryChoiceBox.setItems(FXCollections.observableList(Country.getCountryList()));
@@ -59,10 +154,10 @@ public class ApplicationController implements Initializable {
     }
 
     private void initGroupList() {
-        groupChoiceBox.setItems(FXCollections.observableList(Group.getGroupList()));
-        String DEFAULT_GROUP = "Parti socialiste";
-        groupChoiceBox.getSelectionModel().select(DEFAULT_GROUP);
-        setGroup(DEFAULT_GROUP);
+//        groupChoiceBox.setItems(FXCollections.observableList(Group.getGroupNamesList()));
+//        String DEFAULT_GROUP = "Parti socialiste";
+//        groupChoiceBox.getSelectionModel().select(DEFAULT_GROUP);
+//        setGroup(DEFAULT_GROUP);
     }
 
     private void initGenderGroup() {
@@ -94,10 +189,6 @@ public class ApplicationController implements Initializable {
 
     private void setCountry(String country) {
         contact.addressProperty().get().countryProperty().setValue(country);
-    }
-
-    private void setGroup(String group) {
-        contact.groupProperty().setValue(group);
     }
 
     private void setBirthDate(LocalDate date) {
@@ -148,6 +239,36 @@ public class ApplicationController implements Initializable {
         fieldNamesMap.get(fieldname).setTooltip(null);
     }
 
+    // Treeview handlers
+
+    private void addGroupItem(Group group) {
+        TreeItem<Object> grpItem = new TreeItem<>(group, new ImageView(group.getIcon()));
+        groupTreeView.getRoot().getChildren().add(grpItem);
+        groupTreeView.setCellFactory(param -> new TextFieldTreeCellImpl());
+    }
+
+    private void addGroup() {
+        model.addGroup();
+    }
+
+    private void addContactItem() {
+
+    }
+
+    private void addItem() {
+
+        TreeItem<Object> item = groupTreeView.getSelectionModel().getSelectedItem();
+
+        if (item == null || Objects.equals(item.toString(), "Fiche de contacts")) {
+            // Root -> create a group
+
+            addGroup();
+        } else {
+            addContactItem();
+        }
+
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -163,6 +284,7 @@ public class ApplicationController implements Initializable {
         fieldNamesMap.put("city", cityTextField);
         fieldNamesMap.put("country", countryChoiceBox);
 
+        initTreeView();
         initCountryList();
         initGroupList();
         initGenderGroup();
@@ -181,7 +303,7 @@ public class ApplicationController implements Initializable {
 
         countryChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> setCountry(newv));
 
-        groupChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> setGroup(newv));
+//        groupChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> setGroup(newv));
 
         birthDatePicker.valueProperty().addListener(((obs, oldv, newv) -> setBirthDate(newv)));
 
@@ -189,9 +311,14 @@ public class ApplicationController implements Initializable {
 
         saveButton.setOnAction(evt -> saveContact());
 
+        // Bindings Treeview buttons
+
+        addButton.setOnAction(event -> addItem());
+
+
         // Binding erreurs
 
-        MapChangeListener<String, String> listener = changed -> {
+        MapChangeListener<String, String> errorsListener = changed -> {
             if (changed.wasAdded()) {
 //                System.out.println("oops, i have received an error message: " +
 //                        changed.getKey() + " " + changed.getValueAdded());
@@ -200,7 +327,22 @@ public class ApplicationController implements Initializable {
                 removeErrorMessage(changed.getKey());
             }
         };
-        contact.getErrors().addListener(listener);
+        contact.getErrors().addListener(errorsListener);
+
+        // Bindings model
+
+        ListChangeListener<Group> groupsListener = changed -> {
+            if (changed.next()) {
+                if (changed.wasAdded()) {
+                    addGroupItem(changed.getAddedSubList().get(0));
+                }
+//            else if (changed.wasRemoved()) {
+//                removeErrorMessage(changed.getKey());
+//            }
+            }
+        };
+
+        model.getGroups().addListener(groupsListener);
     }
 
 }
