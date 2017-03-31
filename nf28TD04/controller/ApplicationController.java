@@ -81,6 +81,7 @@ public class ApplicationController implements Initializable {
 
             setText(null);
             setGraphic(textField);
+            textField.requestFocus();
             textField.selectAll();
         }
 
@@ -119,6 +120,7 @@ public class ApplicationController implements Initializable {
 
                     String newName = textField.getText();
 
+                    // Model modification
                     model.setGroupName((Group) getItem(), newName);
 
                     commitEdit(getItem());
