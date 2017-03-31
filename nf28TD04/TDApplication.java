@@ -13,7 +13,7 @@ public class TDApplication extends Application {
 
         Pane root = fxmlLoader.load();
 
-        Scene scene = new Scene(root, 660, 640);
+        Scene scene = new Scene(root, 750, 500);
         stage.setScene(scene);
         stage.setTitle("TD03 - Formulaire de contacts");
         stage.setResizable(false);
