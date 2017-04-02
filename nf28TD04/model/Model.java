@@ -3,10 +3,8 @@ package model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 public class Model {
 
@@ -67,14 +65,42 @@ public class Model {
     }
 
     public List<String> getGroupNamesList() {
-//        String[] a = (String[]) groups.toArray();
-        List<String> groupList = Arrays.asList((String[]) groups.toArray());
+        List<String> groupList = new LinkedList<>();
+        for (Group group : groups) {
+            groupList.add(group.toString());
+        }
         Collections.sort(groupList);
         return groupList;
     }
 
     public ObservableList<Group> getGroups() {
         return groups;
+    }
+
+    public void addContact(Contact contact) {
+
+//        System.out.println("addContact");
+//        System.out.println("address to clone : " + contact.addressProperty());
+
+        Contact newContact = new Contact(contact);
+
+//        System.out.println(newContact.firstnameProperty().get());
+//        System.out.println(newContact.birthdateProperty().get());
+//        System.out.println(newContact.genderProperty().get());
+//        System.out.println(newContact.addressProperty().get().cityProperty().get());
+
+//        contact.firstnameProperty().setValue("AAA");
+//        contact.addressProperty().getValue().cityProperty().setValue("BBB");
+//        contact.birthdateProperty().setValue(LocalDate.now().minusDays(5));
+//        contact.genderProperty().setValue(Contact.MALE_GENDER_PROPERTY);
+//
+//        System.out.println(newContact.firstnameProperty().get());
+//        System.out.println(newContact.birthdateProperty().get());
+//        System.out.println(newContact.genderProperty().get());
+//        System.out.println(newContact.addressProperty().get().cityProperty().get());
+
+        newContact.groupProperty().getValue().addContact(newContact);
+
     }
 
 }

@@ -29,30 +29,28 @@ public class Group {
         contacts = FXCollections.observableArrayList();
     }
 
-    private Contact getContact(String id) {
-        Iterator<Contact> it = contacts.iterator();
-        Contact contact = null;
+//    private Contact getContact(String id) {
+//        Iterator<Contact> it = contacts.iterator();
+//        Contact contact = null;
+//
+//        while (it.hasNext()) {
+//            Contact c = it.next();
+//            if (c.getId().equals(id)) {
+//                contact = c;
+//                break;
+//            }
+//        }
+//
+//        return contact;
+//    }
 
-        while (it.hasNext()) {
-            Contact c = it.next();
-            if (c.getId().equals(id)) {
-                contact = c;
-                break;
-            }
-        }
-
-        return contact;
+    void addContact(Contact contact) {
+        contacts.add(contact);
     }
 
-    public String addContact() {
-        Contact c = new Contact();
-        contacts.add(c);
-        return c.getId();
-    }
-
-    public void removeContact(String id) {
-        contacts.remove(getContact(id));
-    }
+//    public void removeContact(String id) {
+//        contacts.remove(getContact(id));
+//    }
 
     String getName() {
         return name;
@@ -60,6 +58,10 @@ public class Group {
 
     public Image getIcon() {
         return icon;
+    }
+
+    public ObservableList<Contact> getContacts() {
+        return contacts;
     }
 
     void setName(String name) {

@@ -2,11 +2,10 @@ package controller;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
@@ -15,6 +14,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import model.Contact;
 import model.Country;
@@ -23,13 +26,20 @@ import model.Model;
 
 public class ApplicationController implements Initializable {
 
-    private Contact contact;
+    private static String MALE_GENDER_LABEL = "M";
+    private static String FEMALE_GENDER_LABEL = "F";
+
+    private Contact editingContact;
     private Model model;
+
+    private BooleanProperty onEdition;
 
     private Map<String, Control> fieldNamesMap;
 
     @FXML
-    private TreeView<Object> groupTreeView;
+    private TreeView<Object> treeView;
+    @FXML
+    private VBox contactForm;
     @FXML
     private TextField nameTextField;
     @FXML
@@ -51,8 +61,6 @@ public class ApplicationController implements Initializable {
     @FXML
     private RadioButton maleRadio;
     @FXML
-    private ChoiceBox<String> groupChoiceBox;
-    @FXML
     private Button saveButton;
     @FXML
     private Button addButton;
@@ -63,6 +71,10 @@ public class ApplicationController implements Initializable {
     private final class TextFieldTreeCellImpl extends TreeCell<Object> {
 
         private TextField textField;
+        /**
+         * prevent the Enter event to be catched twice for entering edition mode and commiting the edition
+         */
+        private long editTime;
 
         TextFieldTreeCellImpl() {
         }
@@ -70,6 +82,8 @@ public class ApplicationController implements Initializable {
         @Override
         public void startEdit() {
             super.startEdit();
+
+            editTime = System.nanoTime();
 
             // Only groups are editabled
             if (getItem().getClass() != Group.class)
@@ -90,6 +104,8 @@ public class ApplicationController implements Initializable {
             super.cancelEdit();
             setText(getItem().toString());
             setGraphic(getTreeItem().getGraphic());
+            if (textField != null)
+                textField.setText(getString());
         }
 
         @Override
@@ -115,8 +131,16 @@ public class ApplicationController implements Initializable {
 
         private void createTextField() {
             textField = new TextField(getString());
+
+            textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                // On blur/out of focus
+                if (!newValue) {
+                    cancelEdit();
+                }
+            });
+
             textField.setOnKeyReleased(t -> {
-                if (t.getCode() == KeyCode.ENTER) {
+                if (t.getCode() == KeyCode.ENTER && (System.nanoTime() - editTime) > 100_000_000) {
 
                     String newName = textField.getText();
 
@@ -136,32 +160,26 @@ public class ApplicationController implements Initializable {
         }
     }
 
-
     private void initTreeView() {
         TreeItem<Object> rootItem = new TreeItem<>("Fiche de contacts");
         rootItem.setExpanded(true);
-        groupTreeView.setRoot(rootItem);
-        groupTreeView.setEditable(true);
+        treeView.setRoot(rootItem);
+        treeView.setCellFactory(param -> new TextFieldTreeCellImpl());
+    }
+
+    private void initTextFields() {
+        editingContact.initTextFields();
     }
 
     private void initCountryList() {
         countryChoiceBox.setItems(FXCollections.observableList(Country.getCountryList()));
         String DEFAULT_COUNTRY = "France";
         countryChoiceBox.getSelectionModel().select(DEFAULT_COUNTRY);
-        setCountry(DEFAULT_COUNTRY);
-    }
-
-    private void initGroupList() {
-//        groupChoiceBox.setItems(FXCollections.observableList(Group.getGroupNamesList()));
-//        String DEFAULT_GROUP = "Parti socialiste";
-//        groupChoiceBox.getSelectionModel().select(DEFAULT_GROUP);
-//        setGroup(DEFAULT_GROUP);
     }
 
     private void initGenderGroup() {
-        femaleRadio.setUserData("F");
-        maleRadio.setUserData("M");
-        setGender();
+        femaleRadio.setUserData(FEMALE_GENDER_LABEL);
+        maleRadio.setUserData(MALE_GENDER_LABEL);
     }
 
     private void initDatePicker() {
@@ -179,51 +197,45 @@ public class ApplicationController implements Initializable {
             }
         };
         birthDatePicker.setDayCellFactory(dayCellFactory);
-
-
         birthDatePicker.setValue(LocalDate.now());
-        setBirthDate(birthDatePicker.getValue());
     }
 
     private void setCountry(String country) {
-        contact.addressProperty().get().countryProperty().setValue(country);
+        editingContact.addressProperty().get().countryProperty().setValue(country);
+    }
+
+    private void setGroup(Group group) {
+        editingContact.groupProperty().setValue(group);
     }
 
     private void setBirthDate(LocalDate date) {
-        contact.birthdateProperty().setValue(date);
+        editingContact.birthdateProperty().setValue(date);
     }
 
     private void setGender() {
-        contact.genderProperty().setValue(genderGroup.getSelectedToggle().getUserData().toString());
+        String gender = genderGroup.getSelectedToggle().getUserData().toString();
+        editingContact.genderProperty().setValue(
+                gender.equals(MALE_GENDER_LABEL) ? Contact.MALE_GENDER_PROPERTY : Contact.FEMALE_GENDER_PROPERTY
+        );
     }
 
     private void saveContact() {
 
-//        System.out.println(contact.nameProperty().get());
-//        System.out.println(contact.firstnameProperty().get());
-//
-//        System.out.println(contact.addressProperty().get().cityProperty().get());
-//        System.out.println(contact.addressProperty().get().streetLineProperty().get());
-//        System.out.println(contact.addressProperty().get().countryProperty().get());
-//        System.out.println(contact.addressProperty().get().postalCodeProperty().get());
-//
-//        System.out.println(contact.birthdateProperty().get());
-//        System.out.println(contact.genderProperty().get());
-//        System.out.println(contact.groupProperty().get());
-
-        contact.saveContact();
-
-//        System.out.println(contact.getErrors());
-
-        for (Object o : fieldNamesMap.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            String fieldname = entry.getKey().toString();
-            Control field = (Control) entry.getValue();
-            if (contact.getErrors().containsKey(fieldname)) {
-                field.requestFocus();
-                break;
+        if (!editingContact.contactCanBeSaved()) {
+            for (Object o : fieldNamesMap.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                String fieldname = entry.getKey().toString();
+                Control field = (Control) entry.getValue();
+                if (editingContact.getErrors().containsKey(fieldname)) {
+                    field.requestFocus();
+                    break;
+                }
             }
+            return;
         }
+
+        setGroup((Group) treeView.getSelectionModel().getSelectedItem().getValue());
+        model.addContact(editingContact);
 
     }
 
@@ -240,28 +252,44 @@ public class ApplicationController implements Initializable {
     // Treeview handlers
 
     private void addGroupItem(Group group) {
-        TreeItem<Object> grpItem = new TreeItem<>(group, new ImageView(group.getIcon()));
-        groupTreeView.getRoot().getChildren().add(grpItem);
-        groupTreeView.setCellFactory(param -> new TextFieldTreeCellImpl());
+        TreeItem<Object> groupItem = new TreeItem<>(group, new ImageView(group.getIcon()));
+        treeView.getRoot().getChildren().add(groupItem);
     }
 
     private void addGroup() {
         model.addGroup();
     }
 
-    private void addContactItem() {
+    private void addContact() {
 
+        onEdition.setValue(true);
+
+        initTextFields();
+        initCountryList();
+        initGenderGroup();
+        initDatePicker();
     }
 
-    private void addItem() {
+    private void addContactItem(Contact contact) {
+        TreeItem<Object> contactItem = new TreeItem<>(contact, new ImageView(contact.getIcon()));
+        TreeItem<Object> selectedGroup = treeView.getSelectionModel().getSelectedItem();
 
-        TreeItem<Object> item = groupTreeView.getSelectionModel().getSelectedItem();
+        if (selectedGroup.getChildren().isEmpty())
+            selectedGroup.setExpanded(true);
+
+        selectedGroup.getChildren().add(contactItem);
+        treeView.getSelectionModel().select(contactItem);
+    }
+
+    private void addContactObject() {
+
+        TreeItem<Object> item = treeView.getSelectionModel().getSelectedItem();
 
         if (item == null || Objects.equals(item.getValue(), "Fiche de contacts")) {
             // Root -> create a group
             addGroup();
         } else {
-            addContactItem();
+            addContact();
         }
 
     }
@@ -269,8 +297,8 @@ public class ApplicationController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        this.contact = new Contact();
-        this.model = new Model();
+        editingContact = new Contact();
+        model = new Model();
 
         fieldNamesMap = new LinkedHashMap<>();
         fieldNamesMap.put("name", nameTextField);
@@ -282,56 +310,113 @@ public class ApplicationController implements Initializable {
         fieldNamesMap.put("country", countryChoiceBox);
 
         initTreeView();
-        initCountryList();
-        initGroupList();
-        initGenderGroup();
-        initDatePicker();
 
+        onEdition = new SimpleBooleanProperty(false);
+        contactForm.setDisable(true);
+        onEdition.addListener((observable, oldValue, newValue) -> {
+            contactForm.setDisable(!newValue);
 
-        nameTextField.textProperty().bindBidirectional(contact.nameProperty());
-        firstNameTextField.textProperty().bindBidirectional(contact.firstnameProperty());
+            if (newValue && treeView.getSelectionModel().getSelectedItem().getValue().getClass() == Contact.class) {
+                System.out.println("edition mode: todo set the form fields");
+                //TODO: re-init the form fields to the selected contact ones
+            }
+        });
 
+        removeButton.setDisable(true);
 
-        // Bindings
+        // Bindings view
 
-        streetLineTextField.textProperty().bindBidirectional(contact.addressProperty().getValue().streetLineProperty());
-        postalCodeTextField.textProperty().bindBidirectional(contact.addressProperty().getValue().postalCodeProperty());
-        cityTextField.textProperty().bindBidirectional(contact.addressProperty().getValue().cityProperty());
+        final KeyCombination kcTabBack = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHIFT_DOWN);
+
+        nameTextField.textProperty().bindBidirectional(editingContact.nameProperty());
+        firstNameTextField.textProperty().bindBidirectional(editingContact.firstnameProperty());
+
+        firstNameTextField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.TAB && !kcTabBack.match(event)) {
+                event.consume();
+                streetLineTextField.requestFocus();
+            }
+        });
+
+        streetLineTextField.textProperty().bindBidirectional(editingContact.addressProperty().getValue().streetLineProperty());
+
+        streetLineTextField.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (kcTabBack.match(event)) {
+                event.consume();
+                firstNameTextField.requestFocus();
+            }
+        });
+
+        postalCodeTextField.textProperty().bindBidirectional(editingContact.addressProperty().getValue().postalCodeProperty());
+        cityTextField.textProperty().bindBidirectional(editingContact.addressProperty().getValue().cityProperty());
 
         countryChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> setCountry(newv));
 
-//        groupChoiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldv, newv) -> setGroup(newv));
+        countryChoiceBox.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.TAB && !kcTabBack.match(event)) {
+                event.consume();
+                birthDatePicker.requestFocus();
+            }
+        });
 
         birthDatePicker.valueProperty().addListener(((obs, oldv, newv) -> setBirthDate(newv)));
+
+        birthDatePicker.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (kcTabBack.match(event)) {
+                event.consume();
+                countryChoiceBox.requestFocus();
+            }
+        });
 
         genderGroup.selectedToggleProperty().addListener((obs, oldv, newv) -> setGender());
 
         saveButton.setOnAction(evt -> saveContact());
 
-        // Bindings Treeview buttons
+        // Bindings Treeview
 
-        addButton.setOnAction(event -> addItem());
+        addButton.setOnAction(event -> addContactObject());
 
+//        removeButton.setOnAction(event -> removeContactObject());
 
-        // Binding erreurs
+        treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            boolean contactIsSelected = newValue.getValue().getClass() == Contact.class;
+            onEdition.setValue(contactIsSelected);
+            addButton.setDisable(contactIsSelected);
+            removeButton.setDisable(treeView.getRoot() == newValue);
+        });
+
+        // Binding errors
 
         MapChangeListener<String, String> errorsListener = changed -> {
             if (changed.wasAdded()) {
-//                System.out.println("oops, i have received an error message: " +
-//                        changed.getKey() + " " + changed.getValueAdded());
                 addErrorMessage(changed.getKey(), changed.getValueAdded());
             } else if (changed.wasRemoved()) {
                 removeErrorMessage(changed.getKey());
             }
         };
-        contact.getErrors().addListener(errorsListener);
+        editingContact.getErrors().addListener(errorsListener);
+
 
         // Bindings model
+
+        ListChangeListener<Contact> contactsListener = changed -> {
+            if (changed.next()) {
+                if (changed.wasAdded()) {
+                    Contact newContact = changed.getAddedSubList().get(0);
+                    addContactItem(newContact);
+                }
+//            else if (changed.wasRemoved()) {
+//                removeErrorMessage(changed.getKey());
+//            }
+            }
+        };
 
         ListChangeListener<Group> groupsListener = changed -> {
             if (changed.next()) {
                 if (changed.wasAdded()) {
-                    addGroupItem(changed.getAddedSubList().get(0));
+                    Group newGroup = changed.getAddedSubList().get(0);
+                    addGroupItem(newGroup);
+                    newGroup.getContacts().addListener(contactsListener);
                 }
 //            else if (changed.wasRemoved()) {
 //                removeErrorMessage(changed.getKey());

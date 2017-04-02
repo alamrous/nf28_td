@@ -1,11 +1,7 @@
 package model;
 
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Address implements PropertiesMappable {
 
@@ -35,16 +31,5 @@ public class Address implements PropertiesMappable {
 
     public StringProperty countryProperty() {
         return country;
-    }
-
-    public Map<String, Property> toPropertiesMap() {
-
-        Map<String, Property> members = new LinkedHashMap<>();
-        members.put("streetLine", streetLine);
-        members.put("postalCode", postalCode);
-        members.put("city", city);
-        members.put("country", country);
-
-        return members;
     }
 }

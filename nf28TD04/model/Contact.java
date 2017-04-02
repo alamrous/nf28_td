@@ -8,18 +8,23 @@ import java.util.regex.Pattern;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.scene.image.Image;
 
 public class Contact implements PropertiesMappable {
+
+    public static int MALE_GENDER_PROPERTY = 0;
+    public static int FEMALE_GENDER_PROPERTY = 1;
+
+    private static Image DEFAULT_CONTACT_ICON = new Image("file:view/contact.png");
 
     private StringProperty name;
     private StringProperty firstname;
     private ObjectProperty<Address> address;
     private ObjectProperty<LocalDate> birthdate;
-    private StringProperty gender;
-//    private StringProperty group;
+    private IntegerProperty gender;
     private ObjectProperty<Group> group;
 
-    private String id;
+    private Image icon;
 
     private ObservableMap<String, String> errors;
     private List<String> incorrectFields;
@@ -31,32 +36,55 @@ public class Contact implements PropertiesMappable {
         firstname = new SimpleStringProperty("");
         address = new SimpleObjectProperty<>(new Address());
         birthdate = new SimpleObjectProperty<>();
-        gender = new SimpleStringProperty("");
-//        group = new SimpleStringProperty("");
+        gender = new SimpleIntegerProperty(FEMALE_GENDER_PROPERTY);
         group = new SimpleObjectProperty<>();
+
+        icon = DEFAULT_CONTACT_ICON;
 
         errors = FXCollections.observableHashMap();
         incorrectFields = new ArrayList<>();
+    }
 
-        id = UUID.randomUUID().toString();
+    Contact(Contact contact) {
+        name = new SimpleStringProperty(contact.name.getValue());
+        firstname = new SimpleStringProperty(contact.firstname.getValue());
+
+        address = new SimpleObjectProperty<>(new Address());
+        address.getValue().streetLineProperty().setValue(contact.address.getValue().streetLineProperty().getValue());
+        address.getValue().postalCodeProperty().setValue(contact.address.getValue().postalCodeProperty().getValue());
+        address.getValue().cityProperty().setValue(contact.address.getValue().cityProperty().getValue());
+        address.getValue().countryProperty().setValue(contact.address.getValue().countryProperty().getValue());
+
+        birthdate = new SimpleObjectProperty<>(contact.birthdate.getValue());
+        gender = new SimpleIntegerProperty(contact.gender.getValue());
+        group = new SimpleObjectProperty<>(contact.group.getValue());
+
+        icon = contact.icon;
     }
 
     public ObservableMap<String, String> getErrors() {
         return errors;
     }
 
-    public void saveContact() {
+    /**
+     *
+     * @return true if no error has been detected upon the form validation
+     */
+    public boolean contactCanBeSaved() {
         incorrectFields.clear();
 
-        checkNonEmpty(toPropertiesMap());
+        Map<String, Property> mapToCheck = new LinkedHashMap<>(toPropertiesMap());
+        mapToCheck.remove("gender");
+        mapToCheck.remove("group");
+        mapToCheck.remove("country");
 
-        checkCorrectField(toPropertiesMap());
+        checkNonEmpty(mapToCheck);
 
-//        System.out.println("incorrectFields: " + incorrectFields);
+        checkCorrectField(mapToCheck);
 
         errors.entrySet().removeIf(entry -> !incorrectFields.contains(entry.getKey()));
 
-//        System.out.println("errors: " + errors);
+        return errors.isEmpty();
     }
 
     private void checkCorrectField(Map<String, Property> members) {
@@ -66,7 +94,7 @@ public class Contact implements PropertiesMappable {
             Pattern pattern;
             Matcher matcher;
 
-            if (property.getValue().getClass() == String.class) {
+            if (property instanceof StringProperty) {
 
                 if (!incorrectFields.contains(s)) {
 
@@ -111,11 +139,9 @@ public class Contact implements PropertiesMappable {
     private void checkNonEmpty(Map<String, Property> members) {
 
         members.forEach((s, property) -> {
-            if (property.getValue().getClass() == String.class) {
+            if (property instanceof StringProperty) {
 
                 String val = property.getValue().toString();
-//                System.out.println("key: " + s);
-//                System.out.println("val: " + property.getValue());
 
                 if (val.isEmpty()) {
                     errors.put(s, "Ce champ est obligatoire !");
@@ -130,16 +156,14 @@ public class Contact implements PropertiesMappable {
 
     }
 
-    public Map<String, Property> toPropertiesMap() {
-
-        Map<String, Property> members = new LinkedHashMap<>();
-        members.put("name", name);
-        members.put("firstname", firstname);
-        members.put("address", address);
-
-        return members;
+    @Override
+    public String toString() {
+        return this.firstname.getValue() + " " + this.name.getValue();
     }
 
+    public Image getIcon() {
+        return icon;
+    }
 
         /* Properties getters */
 
@@ -159,25 +183,12 @@ public class Contact implements PropertiesMappable {
         return birthdate;
     }
 
-    public StringProperty genderProperty() {
+    public IntegerProperty genderProperty() {
         return gender;
     }
 
-    String getId() {
-        return id;
-    }
-
-//    public StringProperty groupProperty() {
-//        return group;
-//    }
-
     public ObjectProperty<Group> groupProperty() {
         return group;
-    }
-
-    @Override
-    public String toString() {
-        return this.firstname + " " + this.name;
     }
 
 }

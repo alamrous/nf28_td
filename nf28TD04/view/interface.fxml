@@ -26,7 +26,7 @@
 
 <!--suppress ALL -->
 
-<BorderPane prefHeight="493.0" prefWidth="744.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ApplicationController">
+<BorderPane prefHeight="493.0" prefWidth="744.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ApplicationController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -56,7 +56,7 @@
               </VBox>
    </left>
    <center>
-      <VBox maxWidth="626.0" prefHeight="468.0" prefWidth="626.0" spacing="10.0" BorderPane.alignment="TOP_CENTER">
+      <VBox fx:id="contactForm" maxWidth="626.0" prefHeight="468.0" prefWidth="626.0" spacing="10.0" BorderPane.alignment="TOP_CENTER">
          <children>
                       <TitledPane animated="false" collapsible="false" maxWidth="500.0" text="Nom et prénom">
                           <content>
