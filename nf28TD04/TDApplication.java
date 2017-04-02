@@ -13,9 +13,9 @@ public class TDApplication extends Application {
 
         Pane root = fxmlLoader.load();
 
-        Scene scene = new Scene(root, 750, 500);
+        Scene scene = new Scene(root, 750, 495);
         stage.setScene(scene);
-        stage.setTitle("TD03 - Formulaire de contacts");
+        stage.setTitle("TD04 - Liste de contacts");
         stage.setResizable(false);
         stage.show();
     }

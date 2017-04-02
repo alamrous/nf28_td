@@ -26,7 +26,7 @@
 
 <!--suppress ALL -->
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ApplicationController">
+<BorderPane prefHeight="493.0" prefWidth="744.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ApplicationController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -42,7 +42,7 @@
    <left>
               <VBox spacing="10.0" BorderPane.alignment="CENTER">
                   <children>
-                      <TreeView fx:id="groupTreeView" maxWidth="200.0" prefHeight="413.0" />
+                      <TreeView fx:id="treeView" editable="true" maxWidth="200.0" prefHeight="413.0" />
                       <HBox spacing="5.0">
                           <children>
                               <Button fx:id="addButton" mnemonicParsing="false" text="+" />
