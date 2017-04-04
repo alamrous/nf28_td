@@ -52,7 +52,7 @@ public class Group {
 //        contacts.remove(getContact(id));
 //    }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 

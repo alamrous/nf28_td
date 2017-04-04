@@ -94,6 +94,8 @@ public class ApplicationController implements Initializable {
 
             if (textField == null) {
                 createTextField();
+            } else {
+                textField.setText(getString());
             }
 
             setText(null);
@@ -154,6 +156,10 @@ public class ApplicationController implements Initializable {
                     model.setGroupName((Group) getItem(), newName);
 
                     commitEdit(getItem());
+
+                    treeView.getRoot().getChildren().sort(Comparator.comparing(treeItemGroup -> ((Group) treeItemGroup.getValue()).getName()));
+                    treeView.getSelectionModel().select(getTreeItem());
+
 
                 } else if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -246,13 +252,36 @@ public class ApplicationController implements Initializable {
 
     // Treeview handlers
 
+    private void addGroup() {
+        model.addGroup();
+    }
+
+    private void removeGroup(Group groupToRemove) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation - supprimer un groupe");
+        alert.setHeaderText("Attention, cette opération est irréversible !");
+        alert.setContentText("Êtes-vous sûr(e) de vouloir supprimer le groupe " + groupToRemove + " ?\n" +
+                "Tous les contacts de ce groupe seront perdus !");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            model.removeGroup(groupToRemove);
+
+            initTextFields();
+            initCountryList();
+            initGenderGroup();
+            initDatePicker();
+        }
+    }
+
     private void addGroupItem(Group group) {
         TreeItem<Object> groupItem = new TreeItem<>(group, new ImageView(group.getIcon()));
         treeView.getRoot().getChildren().add(groupItem);
+        treeView.getRoot().getChildren().sort(Comparator.comparing(treeItemGroup -> ((Group) treeItemGroup.getValue()).getName()));
     }
 
-    private void addGroup() {
-        model.addGroup();
+    private void removeGroupItem(Group group) {
+        treeView.getRoot().getChildren().removeIf(treeItemGroup -> treeItemGroup.getValue().equals(group));
     }
 
     private void addContact() {
@@ -264,8 +293,7 @@ public class ApplicationController implements Initializable {
         initDatePicker();
     }
 
-    private void removeContact() {
-        Contact contactToRemove = (Contact) treeView.getSelectionModel().getSelectedItem().getValue();
+    private void removeContact(Contact contactToRemove) {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmation - supprimer un contact");
         alert.setHeaderText("Attention, cette opération est irréversible !");
@@ -311,12 +339,12 @@ public class ApplicationController implements Initializable {
     }
 
     private void removeContactObject() {
-        TreeItem<Object> item = treeView.getSelectionModel().getSelectedItem();
+        Object item = treeView.getSelectionModel().getSelectedItem().getValue();
 
-        if (item.getValue().getClass() == Group.class) {
-//            removeGroup();
-        } else if (item.getValue().getClass() == Contact.class) {
-            removeContact();
+        if (item.getClass() == Group.class) {
+            removeGroup((Group) item);
+        } else if (item.getClass() == Contact.class) {
+            removeContact((Contact) item);
         }
     }
 
@@ -491,9 +519,10 @@ public class ApplicationController implements Initializable {
                     addGroupItem(newGroup);
                     newGroup.getContacts().addListener(contactsListener);
                 }
-//            else if (changed.wasRemoved()) {
-//                removeErrorMessage(changed.getKey());
-//            }
+            else if (changed.wasRemoved()) {
+                    Group oldGroup = changed.getRemoved().get(0);
+                    removeGroupItem(oldGroup);
+            }
             }
         };
 

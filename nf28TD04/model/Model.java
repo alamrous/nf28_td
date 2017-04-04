@@ -54,8 +54,8 @@ public class Model {
         groups.add(new Group(Group.DEFAULT_GROUP_NAME + i));
     }
 
-    public void removeGroup(String groupName) {
-        groups.remove(getGroup(groupName));
+    public void removeGroup(Group group) {
+        groups.remove(group);
     }
 
     public void setGroupName(Group group, String name) {
