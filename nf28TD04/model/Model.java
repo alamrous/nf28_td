@@ -102,4 +102,19 @@ public class Model {
 
     }
 
+    public void updateContact(Contact contactToUpdate, Contact contactModel) {
+        contactToUpdate.firstnameProperty().setValue(contactModel.firstnameProperty().getValue());
+        contactToUpdate.nameProperty().setValue(contactModel.nameProperty().getValue());
+        contactToUpdate.addressProperty().getValue().streetLineProperty().setValue(contactModel.addressProperty().getValue().streetLineProperty().getValue());
+        contactToUpdate.addressProperty().getValue().postalCodeProperty().setValue(contactModel.addressProperty().getValue().postalCodeProperty().getValue());
+        contactToUpdate.addressProperty().getValue().cityProperty().setValue(contactModel.addressProperty().getValue().cityProperty().getValue());
+        contactToUpdate.addressProperty().getValue().countryProperty().setValue(contactModel.addressProperty().getValue().countryProperty().getValue());
+        contactToUpdate.birthdateProperty().setValue(contactModel.birthdateProperty().getValue());
+        contactToUpdate.genderProperty().setValue(contactModel.genderProperty().getValue());
+        contactToUpdate.groupProperty().setValue(contactModel.groupProperty().getValue());
+
+        contactToUpdate.groupProperty().getValue().getContacts().remove(contactToUpdate);
+        contactToUpdate.groupProperty().getValue().getContacts().add(contactToUpdate);
+    }
+
 }

@@ -219,8 +219,13 @@ public class ApplicationController implements Initializable {
             return;
         }
 
-        setGroup((Group) treeView.getSelectionModel().getSelectedItem().getValue());
-        model.addContact(editingContact);
+        // New contact
+        if (treeView.getSelectionModel().getSelectedItem().getValue().getClass() == Group.class) {
+            setGroup((Group) treeView.getSelectionModel().getSelectedItem().getValue());
+            model.addContact(editingContact);
+        } else {
+            model.updateContact(originalContact, editingContact);
+        }
 
     }
 
@@ -257,13 +262,18 @@ public class ApplicationController implements Initializable {
 
     private void addContactItem(Contact contact) {
         TreeItem<Object> contactItem = new TreeItem<>(contact, new ImageView(contact.getIcon()));
-        TreeItem<Object> selectedGroup = treeView.getSelectionModel().getSelectedItem();
+        TreeItem<Object> groupParent = treeView.getRoot().getChildren().filtered(objectTreeItem -> objectTreeItem.getValue() == contact.groupProperty().getValue()).get(0);
 
-        if (selectedGroup.getChildren().isEmpty())
-            selectedGroup.setExpanded(true);
+        if (groupParent.getChildren().isEmpty())
+            groupParent.setExpanded(true);
 
-        selectedGroup.getChildren().add(contactItem);
+        groupParent.getChildren().add(contactItem);
         treeView.getSelectionModel().select(contactItem);
+    }
+
+    private void removeContactItem(Contact contact) {
+        TreeItem<Object> groupParent = treeView.getRoot().getChildren().filtered(objectTreeItem -> objectTreeItem.getValue() == contact.groupProperty().getValue()).get(0);
+        groupParent.getChildren().removeIf(treeItemContact -> treeItemContact.getValue().equals(contact));
     }
 
     private void addContactObject() {
@@ -431,10 +441,10 @@ public class ApplicationController implements Initializable {
                 if (changed.wasAdded()) {
                     Contact newContact = changed.getAddedSubList().get(0);
                     addContactItem(newContact);
+                } else if (changed.wasRemoved()) {
+                    Contact oldContact = changed.getRemoved().get(0);
+                    removeContactItem(oldContact);
                 }
-//            else if (changed.wasRemoved()) {
-//                removeErrorMessage(changed.getKey());
-//            }
             }
         };
 
