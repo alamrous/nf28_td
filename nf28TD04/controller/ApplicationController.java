@@ -147,6 +147,9 @@ public class ApplicationController implements Initializable {
 
                     String newName = textField.getText();
 
+                    if (newName.isEmpty())
+                        return;
+
                     // Model modification
                     model.setGroupName((Group) getItem(), newName);
 
