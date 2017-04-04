@@ -30,6 +30,7 @@ public class ApplicationController implements Initializable {
     private static String FEMALE_GENDER_LABEL = "F";
 
     private Contact editingContact;
+    private Contact originalContact;
     private Model model;
 
     private BooleanProperty onEdition;
@@ -172,31 +173,15 @@ public class ApplicationController implements Initializable {
     }
 
     private void initCountryList() {
-        countryChoiceBox.setItems(FXCollections.observableList(Country.getCountryList()));
         String DEFAULT_COUNTRY = "France";
         countryChoiceBox.getSelectionModel().select(DEFAULT_COUNTRY);
     }
 
     private void initGenderGroup() {
-        femaleRadio.setUserData(FEMALE_GENDER_LABEL);
-        maleRadio.setUserData(MALE_GENDER_LABEL);
+        femaleRadio.setSelected(true);
     }
 
     private void initDatePicker() {
-        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
-            public DateCell call(final DatePicker datePicker) {
-                return new DateCell() {
-                    @Override
-                    public void updateItem(LocalDate item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item.isAfter(LocalDate.now())) {
-                            setDisable(true);
-                        }
-                    }
-                };
-            }
-        };
-        birthDatePicker.setDayCellFactory(dayCellFactory);
         birthDatePicker.setValue(LocalDate.now());
     }
 
@@ -294,6 +279,18 @@ public class ApplicationController implements Initializable {
 
     }
 
+    private void initEditingContactWithExisting(Contact contact) {
+        editingContact.firstnameProperty().setValue(contact.firstnameProperty().getValue());
+        editingContact.nameProperty().setValue(contact.nameProperty().getValue());
+        editingContact.addressProperty().getValue().streetLineProperty().setValue(contact.addressProperty().getValue().streetLineProperty().getValue());
+        editingContact.addressProperty().getValue().postalCodeProperty().setValue(contact.addressProperty().getValue().postalCodeProperty().getValue());
+        editingContact.addressProperty().getValue().cityProperty().setValue(contact.addressProperty().getValue().cityProperty().getValue());
+        editingContact.addressProperty().getValue().countryProperty().setValue(contact.addressProperty().getValue().countryProperty().getValue());
+        editingContact.birthdateProperty().setValue(contact.birthdateProperty().getValue());
+        editingContact.genderProperty().setValue(contact.genderProperty().getValue());
+        editingContact.groupProperty().setValue(contact.groupProperty().getValue());
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -309,20 +306,43 @@ public class ApplicationController implements Initializable {
         fieldNamesMap.put("city", cityTextField);
         fieldNamesMap.put("country", countryChoiceBox);
 
+        // Tree view
         initTreeView();
 
+        // Countries
+        countryChoiceBox.setItems(FXCollections.observableList(Country.getCountryList()));
+
+        // Birthdate
+        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item.isAfter(LocalDate.now())) {
+                            setDisable(true);
+                        }
+                    }
+                };
+            }
+        };
+        birthDatePicker.setDayCellFactory(dayCellFactory);
+
+        // Gender
+        femaleRadio.setUserData(FEMALE_GENDER_LABEL);
+        maleRadio.setUserData(MALE_GENDER_LABEL);
+
+        // Handles the edition panel state (enabled/disabled)
         onEdition = new SimpleBooleanProperty(false);
         contactForm.setDisable(true);
-        onEdition.addListener((observable, oldValue, newValue) -> {
-            contactForm.setDisable(!newValue);
+        onEdition.addListener((observable, oldValue, newValue) -> contactForm.setDisable(!newValue));
 
-            if (newValue && treeView.getSelectionModel().getSelectedItem().getValue().getClass() == Contact.class) {
-                System.out.println("edition mode: todo set the form fields");
-                //TODO: re-init the form fields to the selected contact ones
-            }
-        });
-
+        // Remove button
         removeButton.setDisable(true);
+
+
+
+
 
         // Bindings view
 
@@ -383,6 +403,13 @@ public class ApplicationController implements Initializable {
             onEdition.setValue(contactIsSelected);
             addButton.setDisable(contactIsSelected);
             removeButton.setDisable(treeView.getRoot() == newValue);
+
+            if (contactIsSelected) {
+                Object item = treeView.getSelectionModel().getSelectedItem().getValue();
+                originalContact = (Contact) item;
+                initEditingContactWithExisting(originalContact);
+            }
+
         });
 
         // Binding errors
@@ -425,6 +452,16 @@ public class ApplicationController implements Initializable {
         };
 
         model.getGroups().addListener(groupsListener);
+
+        // Bindings on editing contact (model) -> view
+        editingContact.birthdateProperty().addListener((observable, oldValue, newValue) -> birthDatePicker.setValue(newValue));
+        editingContact.genderProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() == Contact.MALE_GENDER_PROPERTY)
+                maleRadio.setSelected(true);
+            else
+                femaleRadio.setSelected(true);
+        });
+        editingContact.addressProperty().getValue().countryProperty().addListener((observable, oldValue, newValue) -> countryChoiceBox.setValue(newValue));
     }
 
 }
