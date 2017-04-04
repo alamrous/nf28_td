@@ -102,6 +102,10 @@ public class Model {
 
     }
 
+    public void removeContact(Contact contact) {
+        contact.groupProperty().getValue().getContacts().remove(contact);
+    }
+
     public void updateContact(Contact contactToUpdate, Contact contactModel) {
         contactToUpdate.firstnameProperty().setValue(contactModel.firstnameProperty().getValue());
         contactToUpdate.nameProperty().setValue(contactModel.nameProperty().getValue());

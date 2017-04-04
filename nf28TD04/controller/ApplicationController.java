@@ -24,6 +24,8 @@ import model.Country;
 import model.Group;
 import model.Model;
 
+import static javafx.scene.control.Alert.*;
+
 public class ApplicationController implements Initializable {
 
     private static String MALE_GENDER_LABEL = "M";
@@ -251,13 +253,30 @@ public class ApplicationController implements Initializable {
     }
 
     private void addContact() {
-
         onEdition.setValue(true);
 
         initTextFields();
         initCountryList();
         initGenderGroup();
         initDatePicker();
+    }
+
+    private void removeContact() {
+        Contact contactToRemove = (Contact) treeView.getSelectionModel().getSelectedItem().getValue();
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation - supprimer un contact");
+        alert.setHeaderText("Attention, cette opération est irréversible !");
+        alert.setContentText("Êtes-vous sûr(e) de vouloir supprimer le contact " + contactToRemove + " ?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            model.removeContact(contactToRemove);
+
+            initTextFields();
+            initCountryList();
+            initGenderGroup();
+            initDatePicker();
+        }
     }
 
     private void addContactItem(Contact contact) {
@@ -268,6 +287,7 @@ public class ApplicationController implements Initializable {
             groupParent.setExpanded(true);
 
         groupParent.getChildren().add(contactItem);
+        groupParent.getChildren().sort(Comparator.comparing(treeItemContact -> ((Contact) treeItemContact.getValue()).firstnameProperty().getValue()));
         treeView.getSelectionModel().select(contactItem);
     }
 
@@ -277,7 +297,6 @@ public class ApplicationController implements Initializable {
     }
 
     private void addContactObject() {
-
         TreeItem<Object> item = treeView.getSelectionModel().getSelectedItem();
 
         if (item == null || Objects.equals(item.getValue(), "Fiche de contacts")) {
@@ -286,7 +305,16 @@ public class ApplicationController implements Initializable {
         } else {
             addContact();
         }
+    }
 
+    private void removeContactObject() {
+        TreeItem<Object> item = treeView.getSelectionModel().getSelectedItem();
+
+        if (item.getValue().getClass() == Group.class) {
+//            removeGroup();
+        } else if (item.getValue().getClass() == Contact.class) {
+            removeContact();
+        }
     }
 
     private void initEditingContactWithExisting(Contact contact) {
@@ -406,7 +434,7 @@ public class ApplicationController implements Initializable {
 
         addButton.setOnAction(event -> addContactObject());
 
-//        removeButton.setOnAction(event -> removeContactObject());
+        removeButton.setOnAction(event -> removeContactObject());
 
         treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             boolean contactIsSelected = newValue.getValue().getClass() == Contact.class;
@@ -420,6 +448,11 @@ public class ApplicationController implements Initializable {
                 initEditingContactWithExisting(originalContact);
             }
 
+        });
+
+        treeView.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.DELETE)
+                removeContactObject();
         });
 
         // Binding errors
