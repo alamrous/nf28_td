@@ -4,12 +4,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Arrays;
 
-public class Group {
+public class Group implements Externalizable {
 
     static String DEFAULT_GROUP_NAME = "Nouveau groupe";
     private static Image DEFAULT_GROUP_ICON = new Image("file:view/group.png");
@@ -19,7 +20,8 @@ public class Group {
     private String name;
     private Image icon;
 
-    Group() {
+    @SuppressWarnings("WeakerAccess")
+    public Group() {
         this(DEFAULT_GROUP_NAME);
     }
 
@@ -77,4 +79,32 @@ public class Group {
         return this.name;
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeUTF(name);
+        out.writeObject(contacts.toArray());
+//        for (Contact contact : contacts) {
+//            out.writeObject(contact);
+//        }
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+         name = in.readUTF();
+
+        Object contacts;
+        contacts = in.readObject();
+        for (Object o : ((Object[]) contacts)) {
+            Contact contact = (Contact) o;
+            contact.groupProperty().setValue(this);
+            this.contacts.add(contact);
+        }
+
+
+//        Contact[] contacts;
+//        contacts = (Contact[])in.readObject();
+//        System.out.println(in.readObject().getClass());
+//        this.contacts.addAll(Arrays.asList(contacts));
+
+    }
 }

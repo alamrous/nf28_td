@@ -3,6 +3,7 @@ package model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.*;
 import java.util.*;
 
 public class Model {
@@ -119,6 +120,48 @@ public class Model {
 
         contactToUpdate.groupProperty().getValue().getContacts().remove(contactToUpdate);
         contactToUpdate.groupProperty().getValue().getContacts().add(contactToUpdate);
+    }
+
+    public void saveOnFile(File f) {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+
+
+//            for (Group group : groups) {
+//                oos.writeObject(group);
+//            }
+
+            oos.writeObject(groups.toArray());
+//            System.out.println(((Group[])groups.toArray()).getClass().getName());
+
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadFromFile(File f) {
+
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+
+            Object groups;
+            groups = ois.readObject();
+            for (Object o : ((Object[]) groups)) {
+                this.groups.add((Group) o);
+            }
+
+//            this.groups.addAll(Arrays.asList(groups));
+
+//            groups.add(group);
+
+//            while ((group = (Group)ois.readObject()) != null) {
+//                groups.add(group);
+//            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }

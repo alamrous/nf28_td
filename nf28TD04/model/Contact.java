@@ -1,5 +1,9 @@
 package model;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -10,7 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.image.Image;
 
-public class Contact implements PropertiesMappable {
+public class Contact implements PropertiesMappable, Externalizable {
 
     public static int MALE_GENDER_PROPERTY = 0;
     public static int FEMALE_GENDER_PROPERTY = 1;
@@ -67,7 +71,6 @@ public class Contact implements PropertiesMappable {
     }
 
     /**
-     *
      * @return true if no error has been detected upon the form validation
      */
     public boolean contactCanBeSaved() {
@@ -191,4 +194,21 @@ public class Contact implements PropertiesMappable {
         return group;
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeUTF(name.getValue());
+        out.writeUTF(firstname.getValue());
+        out.writeObject(address.getValue());
+        out.writeUTF(birthdate.getValue().toString());
+        out.writeUTF(gender.getValue().toString());
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        name.setValue(in.readUTF());
+        firstname.setValue(in.readUTF());
+        address.setValue((Address) in.readObject());
+        birthdate.setValue(LocalDate.parse(in.readUTF()));
+        gender.setValue(Integer.valueOf(in.readUTF()));
+    }
 }

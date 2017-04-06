@@ -1,3 +1,4 @@
+import controller.ApplicationController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,6 +13,8 @@ public class TDApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/interface.fxml"));
 
         Pane root = fxmlLoader.load();
+
+        ((ApplicationController) fxmlLoader.getController()).setStage(stage);
 
         Scene scene = new Scene(root, 750, 495);
         stage.setScene(scene);

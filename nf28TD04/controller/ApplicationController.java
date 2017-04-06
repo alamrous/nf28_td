@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.File;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
@@ -18,6 +19,8 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Contact;
 import model.Country;
@@ -27,6 +30,8 @@ import model.Model;
 import static javafx.scene.control.Alert.*;
 
 public class ApplicationController implements Initializable {
+
+    private Stage stage;
 
     private static String MALE_GENDER_LABEL = "M";
     private static String FEMALE_GENDER_LABEL = "F";
@@ -69,6 +74,10 @@ public class ApplicationController implements Initializable {
     private Button addButton;
     @FXML
     private Button removeButton;
+    @FXML
+    private MenuItem loadMenuItem;
+    @FXML
+    private MenuItem saveMenuItem;
 
 
     private final class TextFieldTreeCellImpl extends TreeCell<Object> {
@@ -238,6 +247,25 @@ public class ApplicationController implements Initializable {
             model.updateContact(originalContact, editingContact);
         }
 
+    }
+
+    private void saveOnFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sauvegarder la liste des contacts");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "/saves"));
+        File f = fileChooser.showSaveDialog(stage);
+        if (f != null)
+            model.saveOnFile(f);
+    }
+
+    private void loadOnFile() {
+        model.getGroups().clear();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Charger la liste des contacts");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir") + "/saves"));
+        File f = fileChooser.showOpenDialog(stage);
+        if (f != null)
+            model.loadFromFile(f);
     }
 
     private void addErrorMessage(String fieldname, String error) {
@@ -461,6 +489,12 @@ public class ApplicationController implements Initializable {
 
         saveButton.setOnAction(evt -> saveContact());
 
+        // Bindings menu items
+
+        saveMenuItem.setOnAction(event -> saveOnFile());
+
+        loadMenuItem.setOnAction(event -> loadOnFile());
+
         // Bindings Treeview
 
         addButton.setOnAction(event -> addContactObject());
@@ -468,6 +502,9 @@ public class ApplicationController implements Initializable {
         removeButton.setOnAction(event -> removeContactObject());
 
         treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null)
+                return;
+
             boolean contactIsSelected = newValue.getValue().getClass() == Contact.class;
             onEdition.setValue(contactIsSelected);
             addButton.setDisable(contactIsSelected);
@@ -518,6 +555,14 @@ public class ApplicationController implements Initializable {
                     Group newGroup = changed.getAddedSubList().get(0);
                     addGroupItem(newGroup);
                     newGroup.getContacts().addListener(contactsListener);
+
+                    if (newGroup.getContacts().size() > 0) {
+                        for (Contact contact : newGroup.getContacts()) {
+                            addContactItem(contact);
+                        }
+
+                    }
+
                 }
             else if (changed.wasRemoved()) {
                     Group oldGroup = changed.getRemoved().get(0);
@@ -539,4 +584,7 @@ public class ApplicationController implements Initializable {
         editingContact.addressProperty().getValue().countryProperty().addListener((observable, oldValue, newValue) -> countryChoiceBox.setValue(newValue));
     }
 
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 }
