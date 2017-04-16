@@ -23,10 +23,10 @@ public class ShowTasksActivity extends AppCompatActivity {
     // identifiant de la requête
     public final static int ADD_TASK = 0;
     //    // identifiant de la chaine qui contient le résultat
-    public final static String NAME ="com.example.addTask.name";
-    public final static String STATUS ="com.example.addTask.status";
-    public final static String PRIORITY ="com.example.addTask.priority";
-    public final static String DATE ="com.example.addTask.date";
+    public final static String NAME = "com.example.addTask.name";
+    public final static String STATUS = "com.example.addTask.status";
+    public final static String PRIORITY = "com.example.addTask.priority";
+    public final static String DATE = "com.example.addTask.date";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +39,9 @@ public class ShowTasksActivity extends AppCompatActivity {
         tasksList.add("Téléphoner à mamie");
         tasksList.add("Insulter le vilain voisin");
 
-
         ListView tasksListView = (ListView) findViewById(R.id.tasksListView);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tasksList);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tasksList);
         tasksListView.setAdapter(adapter);
 
         Button addButton = (Button) findViewById(R.id.addButton);
@@ -50,13 +49,23 @@ public class ShowTasksActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(ShowTasksActivity.this,
-                        AddTaskActivity.class);
+                Intent intent = new Intent(ShowTasksActivity.this, AddTaskActivity.class);
                 startActivityForResult(intent, ADD_TASK);
+
+//                adapter.add("TEST !!!");
+
+//                Log.d("list", tasksList.toString());
 
             }
         });
     }
 
-
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == ADD_TASK) {
+            if (resultCode == RESULT_OK) {
+                // Récupérer ici le résultat dans la partie Extra de l’intent
+                // à l’aide d’une méthode de type getExtra
+            }
+        }
+    }
 }

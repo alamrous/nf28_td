@@ -6,11 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 
-import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class AddTaskActivity extends AppCompatActivity {
+
+    private ScrollView scrollView;
 
     private EditText taskName;
     private RadioGroup taskStatus;
@@ -20,18 +20,30 @@ public class AddTaskActivity extends AppCompatActivity {
     private RadioButton beforeStatus;
     private RadioButton lowPriority;
 
+    private Button cancelButton;
+    private Button clearButton;
+    private Button addButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
+        scrollView = (ScrollView) findViewById(R.id.add_task_scrollView);
+
         taskName = (EditText) findViewById(R.id.taskName);
+
         taskStatus = (RadioGroup) findViewById(R.id.taskStatus);
         taskPriority = (RadioGroup) findViewById(R.id.taskPriority);
+
         deadlinePicker = (DatePicker) findViewById(R.id.deadlinePicker);
 
         beforeStatus = (RadioButton) findViewById(R.id.taskStatusButtonBefore);
         lowPriority = (RadioButton) findViewById(R.id.taskPriorityLow);
+
+        cancelButton = (Button) findViewById(R.id.cancelButton);
+        clearButton = (Button) findViewById(R.id.clearButton);
+        addButton = (Button) findViewById(R.id.okButton);
 
 //        int   day  = datePicker.getDayOfMonth();
 //        int   month= datePicker.getMonth();
@@ -40,52 +52,16 @@ public class AddTaskActivity extends AppCompatActivity {
 //        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 //        String formatedDate = sdf.format(new Date(year, month, day));
 
-        Button addButton = (Button) findViewById(R.id.okButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String infoTask = ((TextView) findViewById(R.id.taskName)).getText().toString() +
-                        " " +
-                        ((RadioButton) findViewById(
-                                ((RadioGroup) findViewById(R.id.taskStatus)).getCheckedRadioButtonId()
-                        )).getText().toString() +
-                        " " +
-                        ((RadioButton) findViewById(
-                                ((RadioGroup) findViewById(R.id.taskPriority)).getCheckedRadioButtonId()
-                        )).getText().toString() +
-                        " " +
-                        ((DatePicker) findViewById(R.id.deadlinePicker)).getDayOfMonth() +
-                        " " +
-                        ((DatePicker) findViewById(R.id.deadlinePicker)).getMonth() +
-                        " " +
-                        ((DatePicker) findViewById(R.id.deadlinePicker)).getYear();
-
-
-                Toast.makeText(getApplicationContext(), infoTask,
-                        Toast.LENGTH_LONG).show();
-
-//                DateFormat.getDateInstance().parse()
-
-
-//                DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
-//                deadline = dateFormat.format(new Date(Long.parseLong(deadline)));
-
-
                 Intent result = new Intent();
-                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
-//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
-//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
-//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
-                setResult(RESULT_OK, result);
+                setResult(RESULT_CANCELED, result);
                 finish();
-
-
             }
         });
 
-        Button eraseButton = (Button) findViewById(R.id.eraseButton);
-        eraseButton.setOnClickListener(new View.OnClickListener() {
+        clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -99,6 +75,50 @@ public class AddTaskActivity extends AppCompatActivity {
                         Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
                         null
                 );
+
+            }
+        });
+        
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (taskName.getText().toString().isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Il faut nommer la tâche !", Toast.LENGTH_SHORT).show();
+                    taskName.requestFocus();
+                    scrollView.scrollTo(0, taskName.getScrollY());
+                    return;
+                }
+
+                String infoTask = taskName.getText().toString() +
+                        " " +
+                        ((RadioButton) findViewById(
+                                taskStatus.getCheckedRadioButtonId()
+                        )).getText().toString() +
+                        " " +
+                        ((RadioButton) findViewById(
+                                taskPriority.getCheckedRadioButtonId()
+                        )).getText().toString() +
+                        " " + deadlinePicker.getDayOfMonth() +
+                        " " + deadlinePicker.getMonth() +
+                        " " + deadlinePicker.getYear();
+
+
+                Toast.makeText(getApplicationContext(), infoTask, Toast.LENGTH_LONG).show();
+
+
+//                DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
+//                String deadline = dateFormat.format(new Date(Long.parseLong(deadlinePicker.toString())));
+
+//                Toast.makeText(getApplicationContext(), deadline, Toast.LENGTH_LONG).show();
+
+//                Intent result = new Intent();
+//                result.putExtra(ShowTasksActivity.NAME, taskName.getText().toString());
+//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
+//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
+//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
+//                setResult(RESULT_OK, result);
+                finish();
 
 
             }

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView android:layout_height="match_parent"
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent">
+<ScrollView
+    android:id="@+id/add_task_scrollView"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent">
 
     <LinearLayout
         android:id="@+id/activity_add_task"
@@ -128,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/erase_new_task_button"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:id="@+id/eraseButton"/>
+                android:id="@+id/clearButton"/>
 
             <Button
                 android:layout_width="wrap_content"
