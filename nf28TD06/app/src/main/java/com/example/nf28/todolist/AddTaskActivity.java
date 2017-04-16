@@ -37,6 +37,7 @@ public class AddTaskActivity extends AppCompatActivity {
         taskPriority = (RadioGroup) findViewById(R.id.taskPriority);
 
         deadlinePicker = (DatePicker) findViewById(R.id.deadlinePicker);
+        deadlinePicker.setMinDate(System.currentTimeMillis() - 1000);
 
         beforeStatus = (RadioButton) findViewById(R.id.taskStatusButtonBefore);
         lowPriority = (RadioButton) findViewById(R.id.taskPriorityLow);
@@ -44,13 +45,6 @@ public class AddTaskActivity extends AppCompatActivity {
         cancelButton = (Button) findViewById(R.id.cancelButton);
         clearButton = (Button) findViewById(R.id.clearButton);
         addButton = (Button) findViewById(R.id.okButton);
-
-//        int   day  = datePicker.getDayOfMonth();
-//        int   month= datePicker.getMonth();
-//        int   year = datePicker.getYear();
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-//        String formatedDate = sdf.format(new Date(year, month, day));
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +72,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
             }
         });
-        
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +84,10 @@ public class AddTaskActivity extends AppCompatActivity {
                     return;
                 }
 
+                String year = String.valueOf(deadlinePicker.getYear());
+                String month = String.valueOf(deadlinePicker.getMonth());
+                String day = String.valueOf(deadlinePicker.getDayOfMonth());
+                String formatedDate = day + "-" + month + "-" + year;
                 String infoTask = taskName.getText().toString() +
                         " " +
                         ((RadioButton) findViewById(
@@ -105,6 +103,12 @@ public class AddTaskActivity extends AppCompatActivity {
 
 
                 Toast.makeText(getApplicationContext(), infoTask, Toast.LENGTH_LONG).show();
+
+
+
+
+
+                Toast.makeText(getApplicationContext(), formatedDate, Toast.LENGTH_LONG).show();
 
 
 //                DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());

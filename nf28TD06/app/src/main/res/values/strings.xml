@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">TodoList</string>
     <string name="newtaskname">Nom de la tâche</string>
-    <string name="newtask_before_state">Non effectué</string>
+    <string name="newtask_before_state">Non effectuée</string>
     <string name="newtask_during_state">En cours</string>
-    <string name="newtask_after_state">Terminé</string>
+    <string name="newtask_after_state">Terminée</string>
     <string name="newtask_low_priority">Faible</string>
     <string name="newtask_medium_priority">Moyenne</string>
     <string name="newtask_high_priority">Élevée</string>
