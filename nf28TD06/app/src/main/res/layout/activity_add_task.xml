@@ -2,115 +2,140 @@
 
 <ScrollView android:layout_height="match_parent"
             xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent">
 
     <LinearLayout
-            android:id="@+id/activity_add_task"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            tools:context="com.example.nf28.todolist.AddTaskActivity"
-            android:gravity="center_horizontal"
-            android:orientation="vertical" android:weightSum="1">
+        android:id="@+id/activity_add_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:context="com.example.nf28.todolist.AddTaskActivity"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:weightSum="1">
+
         <EditText
-                android:hint="@string/newtaskname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:ems="10"
-                android:id="@+id/taskName"/>
-
-        <Space android:layout_width="wrap_content" android:layout_height="20dp"/>
-
-        <TextView
-                android:text="@string/task_status_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/taskStatusLabel"
-        />
-
-        <RadioGroup
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/taskStatus">
-            <RadioButton
-                    android:checked="true"
-                    android:text="@string/newtask_before_state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/taskStatusButtonBefore"
-                    android:layout_weight="1"/>
-            <RadioButton
-                    android:text="@string/newtask_during_state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/taskStatusButtonDuring"
-                    android:layout_weight="1"/>
-            <RadioButton
-                    android:text="@string/newtask_after_state"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/taskStatusButtonAfter"
-                    android:layout_weight="1"/>
-        </RadioGroup>
-
-        <Space android:layout_width="wrap_content" android:layout_height="20dp"/>
+            android:hint="@string/newtaskname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/taskName"
+            android:layout_marginBottom="20dp"/>
 
         <TextView
-                android:text="@string/task_priority_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/taskPriorityLabel"
-        />
+            android:text="@string/task_status_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/taskStatusLabel"
+            android:layout_marginBottom="20dp"/>
 
         <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/taskStatus"
+            android:layout_marginBottom="20dp">
+
+            <RadioButton
+                android:checked="true"
+                android:text="@string/newtask_before_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/taskPriority">
+                android:id="@+id/taskStatusButtonBefore"
+                android:layout_weight="1"/>
+
             <RadioButton
-                    android:checked="true"
-                    android:text="@string/newtask_low_priority"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/taskPriorityLow" android:layout_weight="1"/>
+                android:text="@string/newtask_during_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/taskStatusButtonDuring"
+                android:layout_weight="1"/>
+
             <RadioButton
-                    android:text="@string/newtask_medium_priority"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/taskPriorityMedium"
-                    android:layout_weight="1"/>
-            <RadioButton
-                    android:text="@string/newtask_high_priority"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/taskPriorityHigh" android:layout_weight="1"/>
+                android:text="@string/newtask_after_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/taskStatusButtonAfter"
+                android:layout_weight="1"/>
         </RadioGroup>
 
-        <Space android:layout_width="wrap_content" android:layout_height="20dp"/>
+        <TextView
+            android:text="@string/task_priority_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/taskPriorityLabel"
+            />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/taskPriority"
+            android:layout_marginBottom="20dp">
+
+            <RadioButton
+                android:checked="true"
+                android:text="@string/newtask_low_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/taskPriorityLow"
+                android:layout_weight="1"/>
+
+            <RadioButton
+                android:text="@string/newtask_medium_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/taskPriorityMedium"
+                android:layout_weight="1"/>
+
+            <RadioButton
+                android:text="@string/newtask_high_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/taskPriorityHigh"
+                android:layout_weight="1"/>
+        </RadioGroup>
 
         <DatePicker
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:id="@+id/deadlinePicker" android:layout_weight="1"/>
-
-        <Space android:layout_width="wrap_content" android:layout_height="20dp"/>
+            android:layout_width="match_parent"
+            android:id="@+id/deadlinePicker"
+            android:layout_weight="1"
+            android:layout_marginBottom="20dp"
+            android:layout_height="0dp"/>
 
         <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-        >
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            >
 
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/cancel_new_task_button" style="@style/Widget.AppCompat.Button.Borderless"
-                    android:id="@+id/cancelButton"/>
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/erase_new_task_button" style="@style/Widget.AppCompat.Button.Borderless"
-                    android:id="@+id/eraseButton"/>
-            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="@string/ok_new_task_button" style="@style/Widget.AppCompat.Button.Borderless"
-                    android:id="@+id/okButton"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel_new_task_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:id="@+id/cancelButton"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/erase_new_task_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:id="@+id/eraseButton"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ok_new_task_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:id="@+id/okButton"/>
 
         </LinearLayout>
 

@@ -11,5 +11,6 @@
     <string name="task_priority_label">Priorité</string>
     <string name="cancel_new_task_button">Annuler</string>
     <string name="erase_new_task_button">Effacer</string>
-    <string name="ok_new_task_button">Ok</string>
+    <string name="ok_new_task_button">OK</string>
+    <string name="add_task_button">+</string>
 </resources>
