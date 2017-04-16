@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class AddTaskActivity extends AppCompatActivity {
 
@@ -84,10 +87,16 @@ public class AddTaskActivity extends AppCompatActivity {
                     return;
                 }
 
-                String year = String.valueOf(deadlinePicker.getYear());
-                String month = String.valueOf(deadlinePicker.getMonth());
-                String day = String.valueOf(deadlinePicker.getDayOfMonth());
-                String formatedDate = day + "-" + month + "-" + year;
+                int year = deadlinePicker.getYear();
+                int month = deadlinePicker.getMonth();
+                int day = deadlinePicker.getDayOfMonth();
+
+                Calendar c = Calendar.getInstance();
+                c.set(year, month, day, 0, 0);
+                DateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
+                String formatedDate = simpleDateFormat.format(c.getTime());
+
+
                 String infoTask = taskName.getText().toString() +
                         " " +
                         ((RadioButton) findViewById(
