@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TodoList</string>
+    <string name="newtaskname">Nom de la tâche</string>
+    <string name="newtask_before_state">Non effectué</string>
+    <string name="newtask_during_state">En cours</string>
+    <string name="newtask_after_state">Terminé</string>
+    <string name="newtask_low_priority">Faible</string>
+    <string name="newtask_medium_priority">Moyenne</string>
+    <string name="newtask_high_priority">Élevée</string>
+    <string name="task_status_label">Status</string>
+    <string name="task_priority_label">Priorité</string>
+    <string name="cancel_new_task_button">Annuler</string>
+    <string name="erase_new_task_button">Effacer</string>
+    <string name="ok_new_task_button">Ok</string>
+</resources>
