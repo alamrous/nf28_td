@@ -13,4 +13,6 @@
     <string name="erase_new_task_button">Effacer</string>
     <string name="ok_new_task_button">OK</string>
     <string name="add_task_button">+</string>
+    <string name="show_tasks_activity_name">Liste des tâches</string>
+    <string name="add_task_activity_name">Ajouter une tâche</string>
 </resources>

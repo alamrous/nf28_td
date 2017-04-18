@@ -2,7 +2,6 @@ package com.example.nf28.todolist;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -13,13 +13,14 @@ public class Task {
     static final int HIGH_PRIORITY = 2;
 
     static final int BEFORE_STATUS = 0;
-    private static final int DURING_STATUS = 1;
-    private static final int AFTER_STATUS = 2;
+    static final int DURING_STATUS = 1;
+    static final int AFTER_STATUS = 2;
 
+    static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
 
     private static final SparseArray<String> statusMap = new SparseArray<String>() {
         {
-            append(BEFORE_STATUS, "non complétée");
+            append(BEFORE_STATUS, "non effectuée");
             append(DURING_STATUS, "en cours");
             append(AFTER_STATUS, "terminée");
         }
@@ -76,7 +77,6 @@ public class Task {
     }
 
     String getDeadlineFormated() {
-        DateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
-        return simpleDateFormat.format(deadline);
+        return dateFormat.format(deadline);
     }
 }

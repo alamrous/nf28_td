@@ -8,10 +8,12 @@ import android.widget.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
+import java.util.*;
 
 public class AddTaskActivity extends AppCompatActivity {
+
+    private static Map<String, String> statusMap = new HashMap<>();
+    private static Map<String, String> priorityMap = new HashMap<>();
 
     private ScrollView scrollView;
 
@@ -22,10 +24,6 @@ public class AddTaskActivity extends AppCompatActivity {
 
     private RadioButton beforeStatus;
     private RadioButton lowPriority;
-
-    private Button cancelButton;
-    private Button clearButton;
-    private Button addButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +43,26 @@ public class AddTaskActivity extends AppCompatActivity {
         beforeStatus = (RadioButton) findViewById(R.id.taskStatusButtonBefore);
         lowPriority = (RadioButton) findViewById(R.id.taskPriorityLow);
 
-        cancelButton = (Button) findViewById(R.id.cancelButton);
-        clearButton = (Button) findViewById(R.id.clearButton);
-        addButton = (Button) findViewById(R.id.okButton);
+        Button cancelButton = (Button) findViewById(R.id.cancelButton);
+        Button clearButton = (Button) findViewById(R.id.clearButton);
+        Button addButton = (Button) findViewById(R.id.okButton);
+
+        final String BEFORE_STATUS_LABEL = getResources().getText(R.string.newtask_before_state).toString();
+        final String DURING_STATUS_LABEL = getResources().getText(R.string.newtask_during_state).toString();
+        final String AFTER_STATUS_LABEL = getResources().getText(R.string.newtask_after_state).toString();
+
+        statusMap.put(BEFORE_STATUS_LABEL, Integer.toString(Task.BEFORE_STATUS));
+        statusMap.put(DURING_STATUS_LABEL, Integer.toString(Task.DURING_STATUS));
+        statusMap.put(AFTER_STATUS_LABEL, Integer.toString(Task.AFTER_STATUS));
+
+        final String LOW_PRIORITY_LABEL = getResources().getText(R.string.newtask_low_priority).toString();
+        final String MEDIUM_PRIORITY_LABEL = getResources().getText(R.string.newtask_medium_priority).toString();
+        final String HIGH_PRIORITY_LABEL = getResources().getText(R.string.newtask_high_priority).toString();
+
+        priorityMap.put(LOW_PRIORITY_LABEL, Integer.toString(Task.LOW_PRIORITY));
+        priorityMap.put(MEDIUM_PRIORITY_LABEL, Integer.toString(Task.MEDIUM_PRIORITY));
+        priorityMap.put(HIGH_PRIORITY_LABEL, Integer.toString(Task.HIGH_PRIORITY));
+
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,60 +95,42 @@ public class AddTaskActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if (taskName.getText().toString().isEmpty()) {
+                // No name given
+                String name = taskName.getText().toString();
+                if (name.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Il faut nommer la tâche !", Toast.LENGTH_SHORT).show();
                     taskName.requestFocus();
                     scrollView.scrollTo(0, taskName.getScrollY());
                     return;
                 }
 
+
+                // Deadline
                 int year = deadlinePicker.getYear();
                 int month = deadlinePicker.getMonth();
                 int day = deadlinePicker.getDayOfMonth();
 
                 Calendar c = Calendar.getInstance();
                 c.set(year, month, day, 0, 0);
-                DateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
-                String formatedDate = simpleDateFormat.format(c.getTime());
+                String formatedDate = Task.dateFormat.format(c.getTime());
 
+                // Status
+                String status = ((RadioButton) findViewById(
+                        taskStatus.getCheckedRadioButtonId()
+                )).getText().toString();
 
-                String infoTask = taskName.getText().toString() +
-                        " " +
-                        ((RadioButton) findViewById(
-                                taskStatus.getCheckedRadioButtonId()
-                        )).getText().toString() +
-                        " " +
-                        ((RadioButton) findViewById(
-                                taskPriority.getCheckedRadioButtonId()
-                        )).getText().toString() +
-                        " " + deadlinePicker.getDayOfMonth() +
-                        " " + deadlinePicker.getMonth() +
-                        " " + deadlinePicker.getYear();
+                // Priority
+                String priority = ((RadioButton) findViewById(
+                        taskPriority.getCheckedRadioButtonId()
+                )).getText().toString();
 
-
-                Toast.makeText(getApplicationContext(), infoTask, Toast.LENGTH_LONG).show();
-
-
-
-
-
-                Toast.makeText(getApplicationContext(), formatedDate, Toast.LENGTH_LONG).show();
-
-
-//                DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getApplicationContext());
-//                String deadline = dateFormat.format(new Date(Long.parseLong(deadlinePicker.toString())));
-
-//                Toast.makeText(getApplicationContext(), deadline, Toast.LENGTH_LONG).show();
-
-//                Intent result = new Intent();
-//                result.putExtra(ShowTasksActivity.NAME, taskName.getText().toString());
-//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
-//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
-//                result.putExtra(ShowTasksActivity.NAME,  taskName.getText().toString());
-//                setResult(RESULT_OK, result);
+                Intent result = new Intent();
+                result.putExtra(ShowTasksActivity.NAME, taskName.getText().toString());
+                result.putExtra(ShowTasksActivity.DATE, formatedDate);
+                result.putExtra(ShowTasksActivity.STATUS, statusMap.get(status));
+                result.putExtra(ShowTasksActivity.PRIORITY, priorityMap.get(priority));
+                setResult(RESULT_OK, result);
                 finish();
-
-
             }
         });
 
